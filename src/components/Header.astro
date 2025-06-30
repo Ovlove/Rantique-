@@ -1,0 +1,20 @@
+```astro
+---
+const navItems = [
+  { name: "Home", href: "/" },
+  { name: "Blog", href: "/blog/" },
+  { name: "Fiction", href: "/fiction/" },
+  { name: "About", href: "/about/" },
+];
+---
+
+<header class="bg-white shadow-md sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+    <a href="/" class="text-xl font-bold text-indigo-800">Rantique</a>
+    <nav class="space-x-4 text-sm font-medium text-gray-600">
+      {navItems.map(item => (
+        <a href={item.href} class="hover:text-indigo-500">{item.name}</a>
+      ))}
+    </nav>
+  </div>
+</header>
