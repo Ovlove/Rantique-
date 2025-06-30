@@ -1,31 +1,65 @@
 ---
 import Layout from '../layouts/BaseLayout.astro';
+
+export let title = "Contact Rantique";
 ---
 
-<Layout title="Contact Us" description="Get in touch with the Rantique team.">
-  <main class="prose prose-lg mx-auto py-12">
-    <h1>Contact Us</h1>
-    <p>
-      Have a question, suggestion, or collaboration in mind? We'd love to hear from you.
+<Layout title={title} description="Reach out to the Rantique editorial team.">
+  <main class="max-w-2xl mx-auto px-4 py-16">
+    <h1 class="text-3xl font-bold text-center mb-6">✉️ Contact Us</h1>
+    <p class="text-center text-gray-600 mb-8">
+      Got questions, suggestions, or want to collaborate? We’d love to hear from you.
     </p>
 
-    <h2>📬 Email</h2>
-    <p>
-      Reach us at: <a href="mailto:hello@rantique.com">hello@rantique.com</a>
+    <form class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 space-y-4">
+      <div>
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="name">
+          Your Name
+        </label>
+        <input
+          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          id="name"
+          type="text"
+          placeholder="Jane Doe"
+          required
+        />
+      </div>
+      <div>
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="email">
+          Your Email
+        </label>
+        <input
+          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          id="email"
+          type="email"
+          placeholder="jane@example.com"
+          required
+        />
+      </div>
+      <div>
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="message">
+          Message
+        </label>
+        <textarea
+          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          id="message"
+          rows="5"
+          placeholder="Write your message here..."
+          required
+        ></textarea>
+      </div>
+      <div class="flex items-center justify-between">
+        <button
+          class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          type="submit"
+        >
+          Send Message
+        </button>
+      </div>
+    </form>
+
+    <p class="text-center text-sm text-gray-500 mt-4">
+      We usually respond within 48 hours.
     </p>
-
-    <h2>🌍 Social</h2>
-    <ul>
-      <li><a href="https://twitter.com/rantique" target="_blank">Twitter</a></li>
-      <li><a href="https://instagram.com/rantique" target="_blank">Instagram</a></li>
-      <li><a href="https://facebook.com/rantique" target="_blank">Facebook</a></li>
-    </ul>
-
-    <h2>📖 Submissions</h2>
-    <p>
-      Want to submit an article or short story? We're always looking for fresh voices. Please include a short bio, a brief pitch, and any links to your previous work.
-    </p>
-
-    <p class="italic text-gray-500">We read every message. Expect a response within 2–3 business days.</p>
   </main>
 </Layout>
