@@ -44,4 +44,9 @@ export let description: string;
 
   <body class="bg-[#FAFAFA] text-[#2E2E2E] dark:bg-[#0F0F1A] dark:text-gray-200 font-sans">
     <Header />
-    <main class="max-w-4xl mx-auto
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>
