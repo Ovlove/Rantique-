@@ -1,0 +1,25 @@
+---
+import Layout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import Alert from '../../components/Alert.astro';
+
+export async function getStaticPaths() {
+  const fictionPosts = await getCollection('fiction');
+  return fictionPosts.map(post => ({ params: { slug: post.slug } }));
+}
+
+const { slug } = Astro.params;
+const post = await getCollection('fiction').then(c => c.find(p => p.slug === slug));
+
+if (!post) {
+  throw new Error(`Fiction post not found: ${slug}`);
+}
+
+const { Content, data } = await post.render();
+---
+
+<Layout title={data.title} description={data.description}>
+  <main class="prose prose-lg mx-auto py-12">
+    <Content components={{ Alert }} />
+  </main>
+</Layout>
