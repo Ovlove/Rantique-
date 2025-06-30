@@ -15,8 +15,9 @@
   "dependencies": {
     "astro": "^5.7.14",
     "@astrojs/mdx": "^4.3.0",
-    "@astrojs/netlify": "^6.0.0",
-    "@tailwindcss/typography": "^0.5.9"
+    "@astrojs/netlify": "^4.0.0",
+    "@tailwindcss/typography": "^0.5.9",
+    "rehype-slug": "^6.1.1"
   },
   "devDependencies": {
     "prettier": "^3.2.5"
