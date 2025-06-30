@@ -28,20 +28,20 @@ export let description: string;
 
     <title>{title ? `${title} | Rantique` : 'Rantique — A Boutique of Insightful Ideas'}</title>
 
+    <!-- Favicons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="alternate icon" href="/favicon.ico" />
-    <link rel="stylesheet" href="/styles/global.css" />
 
-    <!-- Preload Inter Font -->
+    <!-- Styles & Fonts -->
+    <link rel="stylesheet" href="/styles/global.css" />
     <link rel="preload" href="/fonts/Inter.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/og-cover.png" as="image" type="image/png" />
   </head>
 
   <body class="bg-[#FAFAFA] text-[#2E2E2E] dark:bg-[#0F0F1A] dark:text-gray-200 font-sans">
     <Header />
-    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <slot />
-    </main>
-    <Footer />
-  </body>
-</html>
+    <main class="max-w-4xl mx-auto
