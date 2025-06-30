@@ -2,23 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Load Inter font */
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/Inter.woff2') format('woff2');
+  font-weight: 100 900;
+  font-display: swap;
+  font-style: normal;
+}
+
+/* Global styles */
 body {
-  font-family: 'Inter', sans-serif;
-  line-height: 1.6;
-  background-color: #FAFAFA;
-  color: #2E2E2E;
+  font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  background-color: #FAFAFA; /* Direct hex to match theme */
+  color: #2E2E2E;            /* Direct hex for readable base text */
 }
 
 a {
-  color: #7F5AF0;
-  text-decoration: none;
-}
-
-a:hover {
-  text-decoration: underline;
-}
-
-.dark body {
-  background-color: #0F0F1A;
-  color: #E5E7EB;
+  @apply text-primary hover:underline;
 }
