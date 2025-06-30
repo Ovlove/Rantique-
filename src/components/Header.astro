@@ -1,20 +1,28 @@
-```astro
 ---
-const navItems = [
-  { name: "Home", href: "/" },
-  { name: "Blog", href: "/blog/" },
-  { name: "Fiction", href: "/fiction/" },
-  { name: "About", href: "/about/" },
+const navLinks = [
+  { name: 'Home', href: '/' },
+  { name: 'Articles', href: '/blog' },
+  { name: 'Fiction', href: '/fiction' },
+  { name: 'About', href: '/about' },
+  { name: 'Contact', href: '/contact' }
 ];
 ---
 
-<header class="bg-white shadow-md sticky top-0 z-50">
-  <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-    <a href="/" class="text-xl font-bold text-indigo-800">Rantique</a>
-    <nav class="space-x-4 text-sm font-medium text-gray-600">
-      {navItems.map(item => (
-        <a href={item.href} class="hover:text-indigo-500">{item.name}</a>
+<header class="bg-white dark:bg-[#0F0F1A] border-b border-gray-200 dark:border-gray-700 shadow-sm sticky top-0 z-50">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
+    <a href="/" class="text-xl font-bold text-[#1A1A2E] dark:text-white">
+      Rantique<span class="text-[#7F5AF0]">.</span>
+    </a>
+    <nav class="hidden md:flex space-x-6 text-sm font-medium">
+      {navLinks.map(link => (
+        <a href={link.href} class="text-gray-600 dark:text-gray-300 hover:text-[#7F5AF0] dark:hover:text-[#7F5AF0] transition">
+          {link.name}
+        </a>
       ))}
     </nav>
+    <!-- Mobile Menu Placeholder -->
+    <div class="md:hidden">
+      <!-- Optional: Add Hamburger Menu -->
+    </div>
   </div>
 </header>
