@@ -1,28 +1,31 @@
 ---
 const navLinks = [
-  { name: 'Home', href: '/' },
-  { name: 'Articles', href: '/blog' },
-  { name: 'Fiction', href: '/fiction' },
-  { name: 'About', href: '/about' },
-  { name: 'Contact', href: '/contact' }
+  { href: '/', label: 'Home' },
+  { href: '/blog', label: 'Blog' },
+  { href: '/fiction', label: 'Fiction' },
+  { href: '/about', label: 'About' },
+  { href: '/contact', label: 'Contact' },
 ];
 ---
 
-<header class="bg-white dark:bg-[#0F0F1A] border-b border-gray-200 dark:border-gray-700 shadow-sm sticky top-0 z-50">
-  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
-    <a href="/" class="text-xl font-bold text-[#1A1A2E] dark:text-white">
-      Rantique<span class="text-[#7F5AF0]">.</span>
+<header class="bg-white dark:bg-[#0F0F1A] border-b border-gray-200 dark:border-gray-800 shadow-sm">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+    <a href="/" class="text-2xl font-bold text-[#1A1A2E] dark:text-white">
+      Rantique
     </a>
-    <nav class="hidden md:flex space-x-6 text-sm font-medium">
+    <nav class="space-x-4 hidden sm:flex">
       {navLinks.map(link => (
-        <a href={link.href} class="text-gray-600 dark:text-gray-300 hover:text-[#7F5AF0] dark:hover:text-[#7F5AF0] transition">
-          {link.name}
+        <a
+          href={link.href}
+          class="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-[#7F5AF0] dark:hover:text-[#7F5AF0] transition"
+        >
+          {link.label}
         </a>
       ))}
     </nav>
-    <!-- Mobile Menu Placeholder -->
-    <div class="md:hidden">
-      <!-- Optional: Add Hamburger Menu -->
-    </div>
+    <!-- Mobile nav placeholder -->
+    <button class="sm:hidden text-gray-700 dark:text-gray-300" aria-label="Open Menu">
+      ☰
+    </button>
   </div>
 </header>
