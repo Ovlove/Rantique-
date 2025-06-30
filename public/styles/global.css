@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: 'Inter', sans-serif;
+  line-height: 1.6;
+  background-color: #FAFAFA;
+  color: #2E2E2E;
+}
+
+a {
+  color: #7F5AF0;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.dark body {
+  background-color: #0F0F1A;
+  color: #E5E7EB;
+}
