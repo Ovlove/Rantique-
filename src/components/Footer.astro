@@ -1,12 +1,58 @@
-<footer class="bg-[#1A1A2E] text-white py-10 mt-12 border-t border-gray-700">
-  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4">
-    <p class="text-lg font-semibold">Rantique</p>
-    <p class="text-sm text-gray-400">A Boutique of Insightful Ideas</p>
-    <nav class="space-x-4">
-      <a href="/about" class="text-sm hover:underline text-gray-300">About</a>
-      <a href="/privacy-policy" class="text-sm hover:underline text-gray-300">Privacy</a>
-      <a href="/contact" class="text-sm hover:underline text-gray-300">Contact</a>
+<footer class="bg-[#1A1A2E] text-white py-12 mt-16 border-t border-gray-700">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 text-center">
+
+    <!-- Logo & Tagline -->
+    <div class="space-y-1">
+      <p class="text-2xl font-bold tracking-wide text-[#7F5AF0]">Rantique</p>
+      <p class="text-sm text-gray-400 italic">A Boutique of Insightful Ideas</p>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm">
+      <a href="/blog" class="text-gray-300 hover:text-white transition">Blog</a>
+      <a href="/fiction" class="text-gray-300 hover:text-white transition">Fiction</a>
+      <a href="/about" class="text-gray-300 hover:text-white transition">About</a>
+      <a href="/contact" class="text-gray-300 hover:text-white transition">Contact</a>
+      <a href="/privacy-policy" class="text-gray-300 hover:text-white transition">Privacy</a>
     </nav>
-    <p class="text-xs text-gray-500">&copy; {new Date().getFullYear()} Rantique. All rights reserved.</p>
+
+    <!-- Tagline or Quote -->
+    <p class="text-sm text-gray-500 italic max-w-xl mx-auto">"Thoughts become words. Words become art."</p>
+
+    <!-- Newsletter (Optional — hook up later) -->
+    <form class="max-w-md mx-auto mt-4">
+      <label for="email" class="sr-only">Email</label>
+      <div class="flex items-center border border-gray-600 rounded-md overflow-hidden">
+        <input
+          id="email"
+          type="email"
+          required
+          placeholder="Get monthly insights"
+          class="w-full px-4 py-2 bg-transparent text-white placeholder-gray-400 focus:outline-none"
+        />
+        <button
+          type="submit"
+          class="bg-[#7F5AF0] hover:bg-[#6C47D9] text-white px-4 py-2 text-sm font-medium transition"
+        >
+          Subscribe
+        </button>
+      </div>
+    </form>
+
+    <!-- Social Icons -->
+    <div class="flex justify-center space-x-4 mt-6">
+      <a href="#" class="text-gray-400 hover:text-white transition" aria-label="Twitter">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M23 3a10.9 10.9 0 01-3.14 1.53A4.48 4.48 0 0016 2a4.48 4.48 0 00-4.47 4.48c0 .35.04.7.12 1.03A12.93 12.93 0 013 4.12a4.51 4.51 0 001.39 6A4.48 4.48 0 012 9.71v.06a4.48 4.48 0 003.6 4.4 4.52 4.52 0 01-2.01.08 4.48 4.48 0 004.19 3.12A9 9 0 013 20a12.73 12.73 0 006.92 2c8.29 0 12.82-6.87 12.82-12.82 0-.2 0-.39-.01-.58A9.18 9.18 0 0023 3z"/>
+        </svg>
+      </a>
+      <!-- More icons can be added here -->
+    </div>
+
+    <!-- Copyright -->
+    <p class="text-xs text-gray-500 mt-6">
+      &copy; {new Date().getFullYear()} Rantique. All rights reserved.
+    </p>
+
   </div>
 </footer>
