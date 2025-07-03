@@ -23,6 +23,13 @@ const wordsPerMinute = 200;
 const rawText = post.body?.raw || '';
 const wordCount = rawText.trim().split(/\s+/).length;
 const readingTime = Math.max(1, Math.ceil(wordCount / wordsPerMinute)); // minimum 1 min read
+
+// Format publish date nicely
+const formattedDate = data.pubDate.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
 ---
 
 <Layout title={data.title} description={data.description}>
@@ -30,7 +37,7 @@ const readingTime = Math.max(1, Math.ceil(wordCount / wordsPerMinute)); // minim
     <header class="mb-6">
       <h1>{data.title}</h1>
       <p class="text-gray-500 text-sm">
-        Published on {data.pubDate.toDateString()} &middot; {readingTime} min read
+        Published on {formattedDate} &middot; About {readingTime} min read
       </p>
     </header>
     <Content components={{ Alert }} />
