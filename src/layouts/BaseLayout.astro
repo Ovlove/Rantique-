@@ -4,27 +4,31 @@ import Footer from '../components/Footer.astro';
 
 export let title: string;
 export let description: string;
+
+const siteUrl = 'https://www.rantique.com';
+const twitterHandle = 'https://twitter.com/YourTwitterHandle'; // Replace with your Twitter URL or remove if none
+const gaMeasurementId = 'G-XXXXXXXXXX'; // Replace with your Google Analytics Measurement ID
 ---
 
 <html lang="en" class="scroll-smooth antialiased">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content={description} />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description || 'Explore insights, stories, and perspectives with style.'} />
     <meta name="theme-color" content="#1A1A2E" />
 
     <!-- Open Graph Meta -->
     <meta property="og:title" content={title || 'Rantique — A Boutique of Insightful Ideas'} />
     <meta property="og:description" content={description || 'Explore insights, stories, and perspectives with style.'} />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="/og-cover.png" />
-    <meta property="og:url" content="https://www.rantique.com" />
+    <meta property="og:image" content={`${siteUrl}/og-cover.png`} />
+    <meta property="og:url" content={siteUrl} />
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title || 'Rantique — A Boutique of Insightful Ideas'} />
     <meta name="twitter:description" content={description || 'Explore insights, stories, and perspectives with style.'} />
-    <meta name="twitter:image" content="/og-cover.png" />
+    <meta name="twitter:image" content={`${siteUrl}/og-cover.png`} />
 
     <title>{title ? `${title} | Rantique` : 'Rantique — A Boutique of Insightful Ideas'}</title>
 
@@ -46,13 +50,73 @@ export let description: string;
 
     <!-- MailerLite Universal -->
     <script>
-      (function(w,d,e,u,f,l,n){w[f]=w[f]||function(){(w[f].q=w[f].q||[])
-      .push(arguments);},l=d.createElement(e),l.async=1,l.src=u,
-      n=d.getElementsByTagName(e)[0],n.parentNode.insertBefore(l,n);})
-      (window,document,'script','https://assets.mailerlite.com/js/universal.js','ml');
+      (function(w,d,e,u,f,l,n){
+        w[f]=w[f]||function(){(w[f].q=w[f].q||[]).push(arguments);};
+        l=d.createElement(e);l.async=1;l.src=u;
+        n=d.getElementsByTagName(e)[0];n.parentNode.insertBefore(l,n);
+      })(window,document,'script','https://assets.mailerlite.com/js/universal.js','ml');
       ml('account', '1638775');
     </script>
-    <!-- End MailerLite Universal -->
+
+    <!-- Google Analytics (GA4) - Uncomment when ready to deploy -->
+    <!-- 
+    <script async src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`}></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', '${gaMeasurementId}', { page_path: window.location.pathname });
+    </script>
+    -->
+
+    <!-- JSON-LD Structured Data for SEO -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Organization",
+            "@id": "${siteUrl}/#organization",
+            "name": "Rantique",
+            "url": "${siteUrl}",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "${siteUrl}/favicon-32x32.png"
+            },
+            "sameAs": [
+              "${twitterHandle}"
+            ]
+          },
+          {
+            "@type": "WebSite",
+            "@id": "${siteUrl}/#website",
+            "url": "${siteUrl}",
+            "name": "Rantique",
+            "publisher": {
+              "@id": "${siteUrl}/#organization"
+            },
+            "potentialAction": {
+              "@type": "SearchAction",
+              "target": "${siteUrl}/search?q={search_term_string}",
+              "query-input": "required name=search_term_string"
+            }
+          },
+          {
+            "@type": "WebPage",
+            "@id": "${siteUrl}/#webpage",
+            "url": "${siteUrl}",
+            "name": "${title || 'Rantique — A Boutique of Insightful Ideas'}",
+            "isPartOf": {
+              "@id": "${siteUrl}/#website"
+            },
+            "about": {
+              "@id": "${siteUrl}/#organization"
+            },
+            "description": "${description || 'Explore insights, stories, and perspectives with style.'}"
+          }
+        ]
+      }
+    </script>
 
   </head>
 
