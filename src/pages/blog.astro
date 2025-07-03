@@ -5,11 +5,11 @@ const posts = await getCollection('blog');
 ---
 
 <Layout title="Rantique Blog" description="Browse all articles and stories">
-  <main class="px-4 md:px-8 lg:px-16 py-12 space-y-8 max-w-3xl mx-auto">
+  <main class="px-4 md:px-8 lg:px-16 py-12 space-y-8 max-w-3xl mx-auto" x-data="{ query: '', posts: [] }" x-init="posts = JSON.parse($refs.postsData.textContent)">
     <h1 class="text-3xl font-bold text-center mb-6">Latest Entries</h1>
 
     <!-- Search Input -->
-    <div x-data="{ query: '' }" class="mb-6">
+    <div class="mb-6">
       <input 
         type="search" 
         placeholder="Search posts..." 
@@ -20,39 +20,31 @@ const posts = await getCollection('blog');
     </div>
 
     <!-- Posts List with Search Filter -->
-    <ul class="space-y-6" x-data>
-      <template x-for="post in $store.posts.filter(p => {
-          const q = query.toLowerCase();
-          return p.title.toLowerCase().includes(q) || (p.description && p.description.toLowerCase().includes(q));
-        })" :key="post.slug">
+    <ul class="space-y-6">
+      <template x-for="post in posts.filter(p => {
+        const q = query.toLowerCase();
+        return p.title.toLowerCase().includes(q) || (p.description && p.description.toLowerCase().includes(q));
+      })" :key="post.slug">
         <li class="border-b pb-4">
           <a :href="`/blog/${post.slug}/`" class="text-xl font-semibold text-blue-600 hover:underline" x-text="post.title"></a>
           <p class="text-gray-500 text-sm" x-text="post.description" x-show="post.description"></p>
           <p class="text-gray-400 text-xs" x-text="new Date(post.pubDate).toDateString()"></p>
         </li>
       </template>
-      <p x-show="$store.posts.filter(p => p.title.toLowerCase().includes(query.toLowerCase()) || (p.description && p.description.toLowerCase().includes(query.toLowerCase()))).length === 0" class="text-center text-gray-500 italic">
+
+      <p x-show="posts.filter(p => p.title.toLowerCase().includes(query.toLowerCase()) || (p.description && p.description.toLowerCase().includes(query.toLowerCase()))).length === 0" class="text-center text-gray-500 italic">
         No posts found.
       </p>
     </ul>
-  </main>
 
-  <script type="module">
-    import Alpine from 'alpinejs'
-    window.Alpine = Alpine
-    Alpine.store('posts', [
-      // Pass posts data serialized for Alpine
-      // Map the Astro posts collection into plain JS objects
-      // including slug, title, description, and pubDate string
-      {%- raw -%}
-      {%- endraw -%}
-      {posts.map(post => ({
+    <!-- Serialized posts data for Alpine -->
+    <script type="application/json" x-ref="postsData" class="hidden">
+      {JSON.stringify(posts.map(post => ({
         slug: post.slug,
         title: post.data.title,
         description: post.data.description || '',
-        pubDate: post.data.pubDate.toISOString()
-      }))}
-    ]);
-    Alpine.start()
-  </script>
+        pubDate: post.data.pubDate.toISOString(),
+      })))}
+    </script>
+  </main>
 </Layout>
