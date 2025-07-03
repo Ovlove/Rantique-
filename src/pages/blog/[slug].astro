@@ -20,9 +20,9 @@ const { Content, data } = await post.render();
 
 // Calculate reading time
 const wordsPerMinute = 200;
-const rawText = post.body.raw || '';
+const rawText = post.body?.raw || '';
 const wordCount = rawText.trim().split(/\s+/).length;
-const readingTime = Math.ceil(wordCount / wordsPerMinute);
+const readingTime = Math.max(1, Math.ceil(wordCount / wordsPerMinute)); // minimum 1 min read
 ---
 
 <Layout title={data.title} description={data.description}>
