@@ -22,7 +22,6 @@ const navLinks = [
       }
     },
     init() {
-      // Initialize darkMode from localStorage or system preference
       if (localStorage.getItem('theme') === 'dark' 
           || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
         this.darkMode = true;
@@ -83,6 +82,7 @@ const navLinks = [
         @click="open = !open"
         class="text-gray-700 dark:text-gray-300 focus:outline-none"
         aria-label="Toggle menu"
+        :aria-expanded="open.toString()"
       >
         <svg
           x-show="!open"
