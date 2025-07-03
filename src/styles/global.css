@@ -5,8 +5,8 @@
 /* Custom global styles */
 body {
   font-family: theme('fontFamily.sans');
-  background-color: theme('colors.background');
-  color: theme('colors.text');
+  background-color: theme('colors.base');
+  color: theme('colors.primary');
 }
 
 a {
@@ -24,19 +24,23 @@ a {
 
 .ml-embedded input[type="email"] {
   @apply flex-grow px-3 py-2 border border-gray-700 rounded-md bg-transparent text-[#e0e0ff] placeholder:text-gray-400 text-base outline-offset-2 transition-colors duration-300;
+  @apply dark:border-gray-600 dark:text-gray-200 dark:placeholder-gray-500;
 }
 
 .ml-embedded input[type="email"]:focus {
   @apply border-purple-500 bg-[#151533];
+  @apply dark:bg-[#1a1a40];
 }
 
 .ml-embedded button[type="submit"] {
   @apply bg-purple-600 text-white font-semibold px-4 py-2 rounded-md cursor-pointer transition-colors duration-300 border-0;
+  @apply dark:bg-purple-700;
 }
 
 .ml-embedded button[type="submit"]:hover,
 .ml-embedded button[type="submit"]:focus {
   @apply bg-purple-700 outline-none;
+  @apply dark:bg-purple-800;
 }
 
 .ml-embedded .ml-success-message,
@@ -46,8 +50,10 @@ a {
 
 .ml-embedded .ml-success-message {
   @apply text-green-400;
+  @apply dark:text-green-300;
 }
 
 .ml-embedded .ml-error-message {
   @apply text-red-400;
+  @apply dark:text-red-300;
   }
