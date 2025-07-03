@@ -59,6 +59,7 @@ const navLinks = [
       <button
         @click="toggle()"
         :aria-label="darkMode ? 'Switch to light mode' : 'Switch to dark mode'"
+        :aria-pressed="darkMode.toString()"
         class="ml-6 p-2 rounded-md bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-[#7F5AF0] hover:text-white transition"
       >
         <template x-if="!darkMode">
