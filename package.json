@@ -13,9 +13,9 @@
     "node": ">=18.18.0 <20.0.0"
   },
   "dependencies": {
-    "astro": "^4.6.15",
-    "@astrojs/mdx": "^4.3.0",
-    "@astrojs/netlify": "^4.1.1",
+    "astro": "^5.11.0",
+    "@astrojs/mdx": "^5.0.0",
+    "@astrojs/netlify": "^5.1.0",
     "@tailwindcss/typography": "^0.5.9",
     "rehype-slug": "^6.1.1"
   },
