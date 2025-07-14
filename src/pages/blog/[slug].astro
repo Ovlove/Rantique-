@@ -4,13 +4,10 @@ import { getCollection, getEntryBySlug } from 'astro:content';
 import { AstroError } from 'astro/errors';
 import Alert from '../../components/Alert.astro';
 
-// Generate dynamic paths for each blog post
-export async function getStaticPaths() {
-  const posts = await getCollection('blog');
-  return posts.map(post => ({ params: { slug: post.slug } }));
-}
+// Get the slug from request params
+const { slug } = Astro.request.params;
 
-const { slug } = Astro.params;
+// Get the blog post by slug
 const post = await getEntryBySlug('blog', slug);
 
 if (!post) {
@@ -19,13 +16,13 @@ if (!post) {
 
 const { Content, data } = await post.render();
 
-// Reading time estimate
+// Estimate reading time
 const wordsPerMinute = 200;
 const rawText = post.body?.raw || '';
 const wordCount = rawText.trim().split(/\s+/).length;
 const readingTime = Math.max(1, Math.ceil(wordCount / wordsPerMinute));
 
-// Format date
+// Format date safely
 let formattedDate = 'Unknown Date';
 if (data.pubDate instanceof Date && !isNaN(data.pubDate)) {
   formattedDate = data.pubDate.toLocaleDateString('en-US', {
@@ -33,6 +30,12 @@ if (data.pubDate instanceof Date && !isNaN(data.pubDate)) {
     month: 'long',
     day: 'numeric',
   });
+}
+
+// For dynamic routes
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map(post => ({ params: { slug: post.slug } }));
 }
 ---
 
