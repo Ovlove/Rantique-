@@ -1,19 +1,16 @@
 ---
 import Layout from '../../layouts/BaseLayout.astro';
-import { getStaticPaths, getEntryBySlug } from 'astro:content';
+import { getCollection, getEntryBySlug } from 'astro:content';
 import { AstroError } from 'astro/errors';
 import Alert from '../../components/Alert.astro';
 
-// Generate dynamic paths based on blog entries
+// Generate dynamic paths for each blog post
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
   return posts.map(post => ({ params: { slug: post.slug } }));
 }
 
-// Extract slug from URL
 const { slug } = Astro.params;
-
-// ✅ Correct way to fetch a single entry by slug
 const post = await getEntryBySlug('blog', slug);
 
 if (!post) {
@@ -22,13 +19,13 @@ if (!post) {
 
 const { Content, data } = await post.render();
 
-// Calculate reading time
+// Reading time estimate
 const wordsPerMinute = 200;
 const rawText = post.body?.raw || '';
 const wordCount = rawText.trim().split(/\s+/).length;
 const readingTime = Math.max(1, Math.ceil(wordCount / wordsPerMinute));
 
-// Format date safely
+// Format date
 let formattedDate = 'Unknown Date';
 if (data.pubDate instanceof Date && !isNaN(data.pubDate)) {
   formattedDate = data.pubDate.toLocaleDateString('en-US', {
