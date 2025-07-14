@@ -4,12 +4,12 @@ import { getCollection } from 'astro:content';
 
 const PAGE_SIZE = 5;
 
-const allPosts = await getCollection('fiction');
+const allPosts = await getCollection('blog');
 
 allPosts.sort((a, b) => b.data.pubDate - a.data.pubDate);
 
 const wordsPerMinute = 200;
-const posts = allPosts.map(post => {
+const posts = allPosts.map((post) => {
   const raw = post.body?.raw || '';
   const wordCount = raw.trim().split(/\s+/).length;
   const readingTime = Math.max(1, Math.ceil(wordCount / wordsPerMinute));
@@ -24,17 +24,17 @@ const posts = allPosts.map(post => {
 });
 ---
 
-<Layout title="Fiction" description="Short stories, chapters, and vivid dreams from Rantique.">
+<Layout title="Rantique Blog" description="Insights, chaos, and calm — one blog post at a time.">
   <main
     class="px-4 md:px-8 lg:px-16 py-12 space-y-12"
-    x-data="fictionList"
-    x-init="initPosts($refs.fictionData.textContent)"
+    x-data="blogList"
+    x-init="initPosts($refs.blogData.textContent)"
   >
 
     <section class="text-center">
-      <h1 class="text-4xl sm:text-5xl font-bold tracking-tight text-[#1A1A2E] dark:text-white">Rantique Fiction</h1>
+      <h1 class="text-4xl sm:text-5xl font-bold tracking-tight text-[#1A1A2E] dark:text-white">Rantique Blog</h1>
       <p class="mt-4 text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-        Dive into stories that stir, haunt, or heal.
+        Thoughtful, chaotic, useful — or just loud. Take what you need.
       </p>
     </section>
 
@@ -42,7 +42,7 @@ const posts = allPosts.map(post => {
       <input
         type="search"
         x-model="query"
-        placeholder="Search fiction..."
+        placeholder="Search blog..."
         class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-[#0F0F1A] dark:border-gray-700"
       />
       <div class="flex flex-wrap gap-2 text-sm">
@@ -66,7 +66,7 @@ const posts = allPosts.map(post => {
       <template x-for="(post, index) in filteredPosts()" :key="post.slug">
         <article x-show="showPage(index)" class="border-b pb-4">
           <a
-            :href="`/fiction/${post.slug}/`"
+            :href="`/blog/${post.slug}/`"
             class="text-xl font-semibold text-purple-700 dark:text-purple-400 hover:underline"
             x-text="post.title"
           ></a>
@@ -79,7 +79,7 @@ const posts = allPosts.map(post => {
       </template>
 
       <p x-show="filteredPosts().length === 0" class="text-center text-gray-500 italic mt-8">
-        No matching fiction found.
+        No matching posts found.
       </p>
     </section>
 
@@ -111,13 +111,13 @@ const posts = allPosts.map(post => {
     </div>
 
     <!-- Hidden JSON for Alpine -->
-    <script type="application/json" x-ref="fictionData" class="hidden">
+    <script type="application/json" x-ref="blogData" class="hidden">
       {JSON.stringify(posts)}
     </script>
 
     <!-- Alpine Logic -->
     <script>
-      function fictionList() {
+      function blogList() {
         return {
           query: '',
           selectedTag: '',
