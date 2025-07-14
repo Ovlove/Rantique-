@@ -17,7 +17,7 @@
     "@astrojs/mdx": "^4.3.0",
     "@astrojs/netlify": "^6.4.1",
     "@tailwindcss/typography": "^0.5.9",
-    "rehype-slug": "^6.1.1"
+    "rehype-slug": "^5.0.0"
   },
   "devDependencies": {
     "prettier": "^3.2.5"
