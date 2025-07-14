@@ -86,7 +86,7 @@ const posts = rawPosts.slice(0, 10).map(post => ({
     document.addEventListener('alpine:init', () => {
       Alpine.data('postsData', () => ({
         query: '',
-        posts: JSON.parse(`{{ JSON.stringify(posts).replace(/`/g, '\\`') }}`),
+        posts: JSON.parse(`${JSON.stringify(posts).replace(/`/g, '\\`')}`),
         filteredPosts() {
           const q = this.query.toLowerCase().trim();
           if (!q) return this.posts;
