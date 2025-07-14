@@ -4,8 +4,8 @@ import { getCollection, getEntryBySlug } from 'astro:content';
 import { AstroError } from 'astro/errors';
 import Alert from '../../components/Alert.astro';
 
-// Get the slug from request params
-const { slug } = Astro.request.params;
+// ✅ Corrected: Use Astro.params instead of Astro.request.params
+const { slug } = Astro.params;
 
 // Get the blog post by slug
 const post = await getEntryBySlug('blog', slug);
