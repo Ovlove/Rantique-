@@ -2,66 +2,143 @@
 import Layout from '../../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
 
-const stories = await getCollection('fiction');
+// CONFIG
+const PAGE_SIZE = 5;
+
+// Get all fiction posts
+const allStories = await getCollection('fiction');
+
+// Sort by date (descending)
+allStories.sort((a, b) => b.data.pubDate - a.data.pubDate);
+
+// Add metadata to each story
+const wordsPerMinute = 200;
+const stories = allStories.map(story => {
+  const raw = story.body?.raw || '';
+  const wordCount = raw.trim().split(/\s+/).length;
+  const readingTime = Math.max(1, Math.ceil(wordCount / wordsPerMinute));
+  return {
+    slug: story.slug,
+    title: story.data.title,
+    description: story.data.description || '',
+    pubDate: story.data.pubDate instanceof Date ? story.data.pubDate.toISOString() : '',
+    readingTime,
+    tags: story.data.tags || [],
+  };
+});
 ---
 
-<Layout title="Rantique Fiction" description="Original short stories by Rantique.">
-  <main
-    class="px-4 md:px-8 lg:px-16 py-12 space-y-8 max-w-4xl mx-auto"
-    x-data="{ query: '', stories: [] }"
-    x-init="stories = JSON.parse($refs.storyData.textContent)"
-  >
-    <h1 class="text-4xl font-bold text-center mb-6">Rantique Fiction</h1>
-    <p class="text-center text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-      Where ideas take shape in stories — from poetic to provocative.
-    </p>
+<Layout title="Fiction" description="A growing collection of stories born from emotion, insight, and imagination.">
+  <main class="px-4 md:px-8 lg:px-16 py-12 space-y-12" x-data="{ query: '', selectedTag: '', currentPage: 1, stories: [], pageSize: ${PAGE_SIZE} }" x-init="stories = JSON.parse($refs.storiesData.textContent)">
 
-    <!-- 🔍 Search -->
-    <div class="my-6">
-      <input 
-        type="search" 
-        placeholder="Search fiction..." 
-        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary" 
-        x-model="query" 
-        aria-label="Search fiction"
-      />
-    </div>
-
-    <!-- 📚 Filtered Fiction List -->
-    <section class="grid gap-10">
-      <template 
-        x-for="story in stories.filter(s => {
-          const q = query.toLowerCase();
-          return s.title.toLowerCase().includes(q) || (s.description && s.description.toLowerCase().includes(q));
-        })" 
-        :key="story.slug"
-      >
-        <article class="bg-white dark:bg-[#1A1A2E] border border-gray-200 dark:border-gray-700 rounded-xl p-6 shadow-sm transition hover:shadow-md">
-          <a :href="`/fiction/${story.slug}/`" class="block">
-            <h2 class="text-2xl font-semibold text-purple-700 dark:text-purple-400 hover:underline mb-1" x-text="story.title"></h2>
-            <p class="text-sm text-gray-600 dark:text-gray-400 mb-2" x-text="story.description" x-show="story.description"></p>
-            <p class="text-xs text-gray-400" x-text="new Date(story.pubDate).toDateString()"></p>
-          </a>
-        </article>
-      </template>
-
-      <!-- 🫥 No Results Message -->
-      <p 
-        x-show="stories.filter(s => s.title.toLowerCase().includes(query.toLowerCase()) || (s.description && s.description.toLowerCase().includes(query.toLowerCase()))).length === 0"
-        class="text-center text-gray-500 italic"
-      >
-        No stories found.
+    <!-- Header -->
+    <section class="text-center">
+      <h1 class="text-4xl sm:text-5xl font-bold tracking-tight text-[#1A1A2E] dark:text-white">Rantique Fiction</h1>
+      <p class="mt-4 text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+        Short stories that stir something deep. Search, explore, and savor every word.
       </p>
     </section>
 
-    <!-- 🔐 Fiction Data for Alpine -->
-    <script type="application/json" x-ref="storyData" class="hidden">
-      {JSON.stringify(stories.map(story => ({
-        slug: story.slug,
-        title: story.data.title,
-        description: story.data.description || '',
-        pubDate: story.data.pubDate?.toISOString?.() || '',
-      })))}
+    <!-- Search + Tag Filter -->
+    <div class="max-w-2xl mx-auto space-y-4">
+      <input
+        type="search"
+        x-model="query"
+        placeholder="Search stories..."
+        class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-[#0F0F1A] dark:border-gray-700"
+      />
+      
+      <!-- Tag Filter -->
+      <div class="flex flex-wrap gap-2 text-sm">
+        <template x-for="tag in [...new Set(stories.flatMap(s => s.tags))]" :key="tag">
+          <button
+            class="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-full"
+            :class="selectedTag === tag ? 'bg-purple-500 text-white' : 'bg-transparent text-gray-700 dark:text-gray-300'"
+            @click="selectedTag = selectedTag === tag ? '' : tag"
+            x-text="tag"
+          ></button>
+        </template>
+        <button
+          x-show="selectedTag"
+          class="ml-2 underline text-sm text-gray-500"
+          @click="selectedTag = ''"
+        >Clear tag</button>
+      </div>
+    </div>
+
+    <!-- Stories -->
+    <section class="max-w-3xl mx-auto space-y-6">
+      <template x-for="(story, index) in filteredStories()" :key="story.slug">
+        <article x-show="showPage(index)" class="border-b pb-4">
+          <a :href="`/fiction/${story.slug}/`" class="text-xl font-semibold text-purple-700 dark:text-purple-400 hover:underline" x-text="story.title"></a>
+          <p class="text-gray-500 text-sm" x-show="story.description" x-text="story.description"></p>
+          <p class="text-gray-400 text-xs">
+            <span x-text="new Date(story.pubDate).toDateString()"></span> &middot;
+            <span x-text="`${story.readingTime} min read`"></span>
+          </p>
+        </article>
+      </template>
+
+      <p x-show="filteredStories().length === 0" class="text-center text-gray-500 italic mt-8">
+        No matching stories found.
+      </p>
+    </section>
+
+    <!-- Pagination -->
+    <div class="flex justify-center items-center gap-4 mt-6" x-show="totalPages() > 1">
+      <button :disabled="currentPage === 1" @click="currentPage--" class="px-3 py-1 border rounded" :class="currentPage === 1 ? 'opacity-50' : ''">
+        Previous
+      </button>
+      <template x-for="i in totalPages()" :key="i">
+        <button
+          class="px-3 py-1 border rounded"
+          :class="i === currentPage ? 'bg-purple-500 text-white' : ''"
+          @click="currentPage = i"
+          x-text="i"
+        ></button>
+      </template>
+      <button :disabled="currentPage === totalPages()" @click="currentPage++" class="px-3 py-1 border rounded" :class="currentPage === totalPages() ? 'opacity-50' : ''">
+        Next
+      </button>
+    </div>
+
+    <!-- Hidden Serialized Data for Alpine -->
+    <script type="application/json" x-ref="storiesData" class="hidden">
+      {JSON.stringify(stories)}
+    </script>
+
+    <!-- Alpine Helpers -->
+    <script>
+      function filteredStories() {
+        const q = this.query.toLowerCase();
+        return this.stories.filter(s => {
+          const matchText = s.title.toLowerCase().includes(q) || s.description.toLowerCase().includes(q);
+          const matchTag = this.selectedTag ? s.tags.includes(this.selectedTag) : true;
+          return matchText && matchTag;
+        });
+      }
+
+      function totalPages() {
+        return Math.ceil(this.filteredStories().length / this.pageSize);
+      }
+
+      function showPage(index) {
+        const start = (this.currentPage - 1) * this.pageSize;
+        return index >= start && index < start + this.pageSize;
+      }
+
+      document.addEventListener('alpine:init', () => {
+        Alpine.data('fictionList', () => ({
+          query: '',
+          selectedTag: '',
+          currentPage: 1,
+          pageSize: ${PAGE_SIZE},
+          stories: [],
+          filteredStories,
+          totalPages,
+          showPage,
+        }));
+      });
     </script>
   </main>
 </Layout>
