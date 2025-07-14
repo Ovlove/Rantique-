@@ -1,118 +1,158 @@
-
 ---
-
-import Layout from '../../layouts/BaseLayout.astro'; import { getCollection } from 'astro:content';
+import Layout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
 
 const PAGE_SIZE = 5;
 
 const allPosts = await getCollection('blog');
 
+// Sort by most recent
 allPosts.sort((a, b) => b.data.pubDate - a.data.pubDate);
 
-const wordsPerMinute = 200; const posts = allPosts.map(post => { const raw = post.body?.raw || ''; const wordCount = raw.trim().split(/\s+/).length; const readingTime = Math.max(1, Math.ceil(wordCount / wordsPerMinute)); return { slug: post.slug, title: post.data.title, description: post.data.description || '', pubDate: post.data.pubDate instanceof Date ? post.data.pubDate.toISOString() : '', readingTime, tags: post.data.tags || [], }; });
+const wordsPerMinute = 200;
+
+const posts = allPosts.map(post => {
+  const raw = post.body?.raw || '';
+  const wordCount = raw.trim().split(/\s+/).length;
+  const readingTime = Math.max(1, Math.ceil(wordCount / wordsPerMinute));
+  return {
+    slug: post.slug,
+    title: post.data.title,
+    description: post.data.description || '',
+    pubDate: post.data.pubDate instanceof Date ? post.data.pubDate.toISOString() : '',
+    readingTime,
+    tags: post.data.tags || [],
+  };
+});
+---
 
 <Layout title="Blog" description="Rantique insights, essays, and timeless thoughts.">
-  <main class="px-4 md:px-8 lg:px-16 py-12 space-y-12" x-data="{ query: '', selectedTag: '', currentPage: 1, posts: [], pageSize: ${PAGE_SIZE} }" x-init="posts = JSON.parse($refs.postsData.textContent)"><section class="text-center">
-  <h1 class="text-4xl sm:text-5xl font-bold tracking-tight text-[#1A1A2E] dark:text-white">Rantique Blog</h1>
-  <p class="mt-4 text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-    Thoughtful writing on creativity, life, and everything in between.
-  </p>
-</section>
+  <main 
+    class="px-4 md:px-8 lg:px-16 py-12 space-y-12"
+    x-data="blogList"
+    x-init="init(postsData)"
+  >
 
-<div class="max-w-2xl mx-auto space-y-4">
-  <input
-    type="search"
-    x-model="query"
-    placeholder="Search posts..."
-    class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-[#0F0F1A] dark:border-gray-700"
-  />
-  <div class="flex flex-wrap gap-2 text-sm">
-    <template x-for="tag in [...new Set(posts.flatMap(p => p.tags))]" :key="tag">
-      <button
-        class="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-full"
-        :class="selectedTag === tag ? 'bg-purple-500 text-white' : 'bg-transparent text-gray-700 dark:text-gray-300'"
-        @click="selectedTag = selectedTag === tag ? '' : tag"
-        x-text="tag"
-      ></button>
-    </template>
-    <button
-      x-show="selectedTag"
-      class="ml-2 underline text-sm text-gray-500"
-      @click="selectedTag = ''"
-    >Clear tag</button>
-  </div>
-</div>
-
-<section class="max-w-3xl mx-auto space-y-6">
-  <template x-for="(post, index) in filteredPosts()" :key="post.slug">
-    <article x-show="showPage(index)" class="border-b pb-4">
-      <a :href="`/blog/${post.slug}/`" class="text-xl font-semibold text-purple-700 dark:text-purple-400 hover:underline" x-text="post.title"></a>
-      <p class="text-gray-500 text-sm" x-show="post.description" x-text="post.description"></p>
-      <p class="text-gray-400 text-xs">
-        <span x-text="new Date(post.pubDate).toDateString()"></span> &middot;
-        <span x-text="`${post.readingTime} min read`"></span>
+    <!-- Header -->
+    <section class="text-center">
+      <h1 class="text-4xl sm:text-5xl font-bold tracking-tight text-[#1A1A2E] dark:text-white">Rantique Blog</h1>
+      <p class="mt-4 text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+        Thoughtful writing on creativity, life, and everything in between.
       </p>
-    </article>
-  </template>
+    </section>
 
-  <p x-show="filteredPosts().length === 0" class="text-center text-gray-500 italic mt-8">
-    No matching posts found.
-  </p>
-</section>
+    <!-- Search + Tag Filter -->
+    <div class="max-w-2xl mx-auto space-y-4">
+      <input
+        type="search"
+        x-model="query"
+        placeholder="Search posts..."
+        class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-[#0F0F1A] dark:border-gray-700"
+      />
 
-<div class="flex justify-center items-center gap-4 mt-6" x-show="totalPages() > 1">
-  <button :disabled="currentPage === 1" @click="currentPage--" class="px-3 py-1 border rounded" :class="currentPage === 1 ? 'opacity-50' : ''">
-    Previous
-  </button>
-  <template x-for="i in totalPages()" :key="i">
-    <button
-      class="px-3 py-1 border rounded"
-      :class="i === currentPage ? 'bg-purple-500 text-white' : ''"
-      @click="currentPage = i"
-      x-text="i"
-    ></button>
-  </template>
-  <button :disabled="currentPage === totalPages()" @click="currentPage++" class="px-3 py-1 border rounded" :class="currentPage === totalPages() ? 'opacity-50' : ''">
-    Next
-  </button>
-</div>
+      <div class="flex flex-wrap gap-2 text-sm">
+        <template x-for="tag in availableTags" :key="tag">
+          <button
+            class="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-full"
+            :class="selectedTag === tag ? 'bg-purple-500 text-white' : 'bg-transparent text-gray-700 dark:text-gray-300'"
+            @click="toggleTag(tag)"
+            x-text="tag"
+          ></button>
+        </template>
+        <button
+          x-show="selectedTag"
+          class="ml-2 underline text-sm text-gray-500"
+          @click="selectedTag = ''"
+        >Clear tag</button>
+      </div>
+    </div>
 
-<script type="application/json" x-ref="postsData" class="hidden">
-  {JSON.stringify(posts)}
-</script>
+    <!-- Posts List -->
+    <section class="max-w-3xl mx-auto space-y-6">
+      <template x-for="(post, index) in filteredPosts" :key="post.slug">
+        <article x-show="showPage(index)" class="border-b pb-4">
+          <a :href="`/blog/${post.slug}/`" class="text-xl font-semibold text-purple-700 dark:text-purple-400 hover:underline" x-text="post.title"></a>
+          <p class="text-gray-500 text-sm" x-show="post.description" x-text="post.description"></p>
+          <p class="text-gray-400 text-xs">
+            <span x-text="formatDate(post.pubDate)"></span> &middot;
+            <span x-text="`${post.readingTime} min read`"></span>
+          </p>
+        </article>
+      </template>
 
-<script>
-  function filteredPosts() {
-    const q = this.query.toLowerCase();
-    return this.posts.filter(p => {
-      const matchText = p.title.toLowerCase().includes(q) || p.description.toLowerCase().includes(q);
-      const matchTag = this.selectedTag ? p.tags.includes(this.selectedTag) : true;
-      return matchText && matchTag;
-    });
-  }
+      <p x-show="filteredPosts.length === 0" class="text-center text-gray-500 italic mt-8">
+        No matching posts found.
+      </p>
+    </section>
 
-  function totalPages() {
-    return Math.ceil(this.filteredPosts().length / this.pageSize);
-  }
+    <!-- Pagination -->
+    <div class="flex justify-center items-center gap-4 mt-6" x-show="totalPages > 1">
+      <button :disabled="currentPage === 1" @click="currentPage--" class="px-3 py-1 border rounded" :class="currentPage === 1 ? 'opacity-50' : ''">
+        Previous
+      </button>
+      <template x-for="i in totalPages" :key="i">
+        <button
+          class="px-3 py-1 border rounded"
+          :class="i === currentPage ? 'bg-purple-500 text-white' : ''"
+          @click="currentPage = i"
+          x-text="i"
+        ></button>
+      </template>
+      <button :disabled="currentPage === totalPages" @click="currentPage++" class="px-3 py-1 border rounded" :class="currentPage === totalPages ? 'opacity-50' : ''">
+        Next
+      </button>
+    </div>
 
-  function showPage(index) {
-    const start = (this.currentPage - 1) * this.pageSize;
-    return index >= start && index < start + this.pageSize;
-  }
+    <!-- Posts Data -->
+    <script type="application/json" x-ref="postsData" class="hidden" id="postsData">
+      {JSON.stringify(posts)}
+    </script>
 
-  document.addEventListener('alpine:init', () => {
-    Alpine.data('blogList', () => ({
-      query: '',
-      selectedTag: '',
-      currentPage: 1,
-      pageSize: ${PAGE_SIZE},
-      posts: [],
-      filteredPosts,
-      totalPages,
-      showPage,
-    }));
-  });
-</script>
+    <!-- Alpine Component -->
+    <script>
+      document.addEventListener('alpine:init', () => {
+        Alpine.data('blogList', () => ({
+          query: '',
+          selectedTag: '',
+          currentPage: 1,
+          pageSize: ${PAGE_SIZE},
+          posts: [],
+          availableTags: [],
+
+          init(ref) {
+            this.posts = JSON.parse(ref.textContent);
+            this.availableTags = [...new Set(this.posts.flatMap(p => p.tags))];
+          },
+
+          toggleTag(tag) {
+            this.selectedTag = this.selectedTag === tag ? '' : tag;
+          },
+
+          get filteredPosts() {
+            const q = this.query.toLowerCase();
+            return this.posts.filter(p => {
+              const matchesText = p.title.toLowerCase().includes(q) || p.description.toLowerCase().includes(q);
+              const matchesTag = this.selectedTag ? p.tags.includes(this.selectedTag) : true;
+              return matchesText && matchesTag;
+            });
+          },
+
+          get totalPages() {
+            return Math.ceil(this.filteredPosts.length / this.pageSize);
+          },
+
+          showPage(index) {
+            const start = (this.currentPage - 1) * this.pageSize;
+            return index >= start && index < start + this.pageSize;
+          },
+
+          formatDate(dateStr) {
+            const d = new Date(dateStr);
+            return isNaN(d) ? 'Unknown' : d.toDateString();
+          }
+        }));
+      });
+    </script>
 
   </main>
 </Layout>
