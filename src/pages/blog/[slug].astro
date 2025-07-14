@@ -24,12 +24,16 @@ const rawText = post.body?.raw || '';
 const wordCount = rawText.trim().split(/\s+/).length;
 const readingTime = Math.max(1, Math.ceil(wordCount / wordsPerMinute)); // minimum 1 min read
 
-// Format publish date nicely
-const formattedDate = data.pubDate.toLocaleDateString('en-US', {
-  year: 'numeric',
-  month: 'long',
-  day: 'numeric',
-});
+// Format publish date safely
+let formattedDate = 'Unknown Date';
+
+if (data.pubDate instanceof Date && !isNaN(data.pubDate)) {
+  formattedDate = data.pubDate.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+}
 ---
 
 <Layout title={data.title} description={data.description}>
