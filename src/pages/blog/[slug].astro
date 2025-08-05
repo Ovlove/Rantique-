@@ -4,7 +4,7 @@ import { getCollection, getEntryBySlug } from 'astro:content';
 import { AstroError } from 'astro/errors';
 import Alert from '../../components/Alert.astro';
 
-// ✅ Corrected: Use Astro.params instead of Astro.request.params
+// ✅ Correct way to get route parameters in Astro
 const { slug } = Astro.params;
 
 // Get the blog post by slug
@@ -32,10 +32,12 @@ if (data.pubDate instanceof Date && !isNaN(data.pubDate)) {
   });
 }
 
-// For dynamic routes
+// Define dynamic paths
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
-  return posts.map(post => ({ params: { slug: post.slug } }));
+  return posts.map(post => ({
+    params: { slug: post.slug },
+  }));
 }
 ---
 
