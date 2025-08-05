@@ -10,37 +10,37 @@ function calculateReadingTime(text) {
 
 const rawPosts = await getCollection('blog');
 
-const posts = rawPosts.slice(0, 10).map(post => ({
-  slug: post.slug,
-  title: post.data.title,
-  description: post.data.description || '',
-  pubDate: post.data.pubDate,
-  formattedDate: post.data.pubDate.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  }),
-  readingTime: calculateReadingTime(post.body.raw || ''),
-}));
+const posts = rawPosts
+  .sort((a, b) => b.data.pubDate - a.data.pubDate)
+  .slice(0, 10)
+  .map(post => ({
+    slug: post.slug,
+    title: post.data.title,
+    description: post.data.description || '',
+    pubDate: post.data.pubDate,
+    formattedDate: post.data.pubDate.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    }),
+    readingTime: calculateReadingTime(post.body?.raw || ''),
+  }));
 ---
-
-<head>
-  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-</head>
 
 <Layout title="Rantique – A Boutique of Insightful Ideas" description="Articles, opinions, and short fiction that spark thought.">
   <main
     class="px-4 md:px-8 lg:px-16 py-16 space-y-12 max-w-4xl mx-auto text-center"
-    x-data="postsData()"
+    x-data="postsData"
+    x-init="initPosts($refs.rawJson.textContent)"
   >
     <!-- Brand Logo -->
     <img src="/favicon-32x32.png" alt="Rantique Logo" class="mx-auto w-12 h-12" loading="lazy" />
 
     <!-- Main Heading -->
     <h1 class="text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white">
-      Welcome to <span class="text-primary">Rantique</span>
+      Welcome to <span class="text-purple-600 dark:text-purple-400">Rantique</span>
     </h1>
-    <p class="text-lg text-muted max-w-xl mx-auto">
+    <p class="text-lg text-gray-600 dark:text-gray-400 max-w-xl mx-auto">
       A boutique of insightful ideas — exploring stories, commentary, and conversations that matter.
     </p>
 
@@ -49,7 +49,7 @@ const posts = rawPosts.slice(0, 10).map(post => ({
       <input
         type="search"
         placeholder="Search posts..."
-        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-800 dark:text-white"
+        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-gray-800 dark:text-white"
         x-model.debounce.300ms="query"
         aria-label="Search blog posts"
       />
@@ -58,21 +58,23 @@ const posts = rawPosts.slice(0, 10).map(post => ({
     <!-- Latest Blog Posts -->
     <section class="space-y-6 text-left max-w-3xl mx-auto" aria-live="polite" aria-atomic="true">
       <h2 class="text-2xl font-semibold text-gray-800 dark:text-white mb-4">Latest Posts</h2>
-      <template x-for="post in filteredPosts()" :key="post.slug">
-        <li class="border-b pb-4 list-none">
-          <a
-            :href="`/blog/${post.slug}/`"
-            class="text-xl font-bold text-primary hover:underline"
-            x-html="highlight(post.title)"
-          ></a>
-          <p
-            class="text-sm text-gray-600 dark:text-gray-400"
-            x-show="post.description"
-            x-html="highlight(post.description)"
-          ></p>
-          <p class="text-xs text-muted" x-text="post.formattedDate + ' · About ' + post.readingTime + ' min read'"></p>
-        </li>
-      </template>
+      <ul class="space-y-6">
+        <template x-for="post in filteredPosts()" :key="post.slug">
+          <li class="border-b pb-4 list-none">
+            <a
+              :href="`/blog/${post.slug}/`"
+              class="text-xl font-bold text-purple-700 dark:text-purple-400 hover:underline"
+              x-html="highlight(post.title)"
+            ></a>
+            <p
+              class="text-sm text-gray-600 dark:text-gray-400"
+              x-show="post.description"
+              x-html="highlight(post.description)"
+            ></p>
+            <p class="text-xs text-gray-500 dark:text-gray-400" x-text="post.formattedDate + ' · ' + post.readingTime + ' min read'"></p>
+          </li>
+        </template>
+      </ul>
       <p
         x-show="filteredPosts().length === 0"
         class="text-center text-gray-500 italic mt-8"
@@ -80,36 +82,53 @@ const posts = rawPosts.slice(0, 10).map(post => ({
         No posts found.
       </p>
     </section>
-  </main>
 
-  <script>
-    document.addEventListener('alpine:init', () => {
-      Alpine.data('postsData', () => ({
-        query: '',
-        posts: JSON.parse(`${JSON.stringify(posts).replace(/`/g, '\\`')}`),
-        filteredPosts() {
-          const q = this.query.toLowerCase().trim();
-          if (!q) return this.posts;
-          return this.posts.filter(
-            (p) =>
-              p.title.toLowerCase().includes(q) || p.description.toLowerCase().includes(q)
-          );
-        },
-        highlight(text) {
-          if (!this.query) return this.escapeHtml(text);
-          const q = this.query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-          const regex = new RegExp(`(${q})`, 'gi');
-          return this.escapeHtml(text).replace(regex, '<mark class="bg-yellow-200 dark:bg-yellow-600">$1</mark>');
-        },
-        escapeHtml(text) {
-          return text
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#039;');
-        },
-      }));
-    });
-  </script>
+    <!-- Optional: Fiction Teaser -->
+    <section class="mt-12">
+      <a href="/fiction/" class="inline-block mt-6 text-purple-600 dark:text-purple-400 underline hover:text-purple-800 dark:hover:text-purple-300 text-sm">
+        Discover our original short fiction →
+      </a>
+    </section>
+
+    <!-- Raw JSON for Alpine -->
+    <script type="application/json" x-ref="rawJson" class="hidden">
+      {JSON.stringify(posts)}
+    </script>
+
+    <!-- Alpine.js Logic -->
+    <script>
+      document.addEventListener('alpine:init', () => {
+        Alpine.data('postsData', () => ({
+          query: '',
+          posts: [],
+          initPosts(json) {
+            this.posts = JSON.parse(json);
+          },
+          filteredPosts() {
+            const q = this.query.toLowerCase().trim();
+            if (!q) return this.posts;
+            return this.posts.filter(
+              p =>
+                p.title.toLowerCase().includes(q) ||
+                p.description.toLowerCase().includes(q)
+            );
+          },
+          highlight(text) {
+            if (!this.query) return this.escapeHtml(text);
+            const q = this.query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+            const regex = new RegExp(`(${q})`, 'gi');
+            return this.escapeHtml(text).replace(regex, '<mark class="bg-yellow-200 dark:bg-yellow-600">$1</mark>');
+          },
+          escapeHtml(text) {
+            return text
+              .replace(/&/g, '&amp;')
+              .replace(/</g, '&lt;')
+              .replace(/>/g, '&gt;')
+              .replace(/"/g, '&quot;')
+              .replace(/'/g, '&#039;');
+          },
+        }));
+      });
+    </script>
+  </main>
 </Layout>
