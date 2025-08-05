@@ -122,7 +122,7 @@ const posts = allPosts.map((post) => {
           query: '',
           selectedTag: '',
           currentPage: 1,
-          pageSize: ${PAGE_SIZE},
+          pageSize: 5, // ✅ fixed value instead of ${PAGE_SIZE}
           posts: [],
           initPosts(json) {
             this.posts = JSON.parse(json);
