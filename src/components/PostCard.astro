@@ -10,12 +10,17 @@ export interface Props {
   };
   section: string;
 }
+
 const { post, section } = Astro.props;
+const slug = post.slug.replace(/\/$/, '').toLowerCase();
+const formattedDate = new Intl.DateTimeFormat('en-US', {
+  dateStyle: 'medium',
+}).format(new Date(post.pubDate));
 ---
 
 <article class="border-b pb-4">
   <a
-    href={`/${section.toLowerCase()}/${post.slug}/`}
+    href={`/${section.toLowerCase()}/${slug}/`}
     class="text-xl font-semibold text-purple-700 dark:text-purple-400 hover:underline"
   >
     {post.title}
@@ -24,6 +29,15 @@ const { post, section } = Astro.props;
     <p class="text-gray-500 text-sm">{post.description}</p>
   )}
   <p class="text-gray-400 text-xs">
-    {new Date(post.pubDate).toDateString()} &middot; {post.readingTime} min read
+    {formattedDate} &middot; {post.readingTime} min read
   </p>
+  {post.tags && post.tags.length > 0 && (
+    <ul class="flex flex-wrap gap-2 mt-2">
+      {post.tags.map(tag => (
+        <li class="text-xs text-purple-600 dark:text-purple-300 bg-purple-50 dark:bg-purple-900 px-2 py-0.5 rounded">
+          #{tag}
+        </li>
+      ))}
+    </ul>
+  )}
 </article>
