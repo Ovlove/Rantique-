@@ -1,0 +1,29 @@
+---
+export interface Props {
+  post: {
+    slug: string;
+    title: string;
+    description?: string;
+    pubDate: string;
+    readingTime: number;
+    tags?: string[];
+  };
+  section: string;
+}
+const { post, section } = Astro.props;
+---
+
+<article class="border-b pb-4">
+  <a
+    href={`/${section.toLowerCase()}/${post.slug}/`}
+    class="text-xl font-semibold text-purple-700 dark:text-purple-400 hover:underline"
+  >
+    {post.title}
+  </a>
+  {post.description && (
+    <p class="text-gray-500 text-sm">{post.description}</p>
+  )}
+  <p class="text-gray-400 text-xs">
+    {new Date(post.pubDate).toDateString()} &middot; {post.readingTime} min read
+  </p>
+</article>
