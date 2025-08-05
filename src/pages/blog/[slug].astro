@@ -6,12 +6,9 @@ import Alert from '../../components/Alert.astro';
 
 const { slug } = Astro.params;
 
-// Get blog post by slug
+// Fetch blog post by slug
 const post = await getEntryBySlug('blog', slug);
-
-if (!post) {
-  throw new AstroError(`Post not found: ${slug}`);
-}
+if (!post) throw new AstroError(`Post not found: ${slug}`);
 
 const { Content, data } = await post.render();
 
@@ -20,7 +17,7 @@ const wordsPerMinute = 200;
 const wordCount = post.body?.raw?.split(/\s+/).length || 0;
 const readingTime = Math.max(1, Math.ceil(wordCount / wordsPerMinute));
 
-// Format publication date safely
+// Format publication date
 let formattedDate = 'Unknown Date';
 if (data?.pubDate) {
   const date = new Date(data.pubDate);
@@ -33,7 +30,7 @@ if (data?.pubDate) {
   }
 }
 
-// Required for dynamic routes
+// Generate static paths
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
   return posts.map((post) => ({
@@ -43,13 +40,14 @@ export async function getStaticPaths() {
 ---
 
 <Layout title={data.title} description={data.description}>
-  <main class="prose prose-lg mx-auto py-12">
+  <main class="prose prose-lg prose-neutral mx-auto py-12 px-4">
     <header class="mb-6">
       <h1>{data.title}</h1>
       <p class="text-gray-500 text-sm">
-        Published on {formattedDate} &middot; About {readingTime} min read
+        Published on {formattedDate} &middot; ~{readingTime} min read
       </p>
     </header>
+
     <Content components={{ Alert }} />
   </main>
 </Layout>
