@@ -4,7 +4,6 @@ import { getCollection, getEntryBySlug } from 'astro:content';
 import { AstroError } from 'astro/errors';
 import Alert from '../../components/Alert.astro';
 
-// ✅ Correct way to get route parameters in Astro
 const { slug } = Astro.params;
 
 // Get the blog post by slug
@@ -24,15 +23,19 @@ const readingTime = Math.max(1, Math.ceil(wordCount / wordsPerMinute));
 
 // Format date safely
 let formattedDate = 'Unknown Date';
-if (data.pubDate instanceof Date && !isNaN(data.pubDate)) {
-  formattedDate = data.pubDate.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
+
+if (data?.pubDate) {
+  const parsedDate = new Date(data.pubDate);
+  if (!isNaN(parsedDate)) {
+    formattedDate = parsedDate.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  }
 }
 
-// Define dynamic paths
+// For dynamic routes
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
   return posts.map(post => ({
