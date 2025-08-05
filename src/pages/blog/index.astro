@@ -114,9 +114,9 @@ const posts = allPosts.map(post => {
       </button>
     </div>
 
-    <!-- Hidden Serialized Data -->
+    <!-- Hidden Serialized Data (Fixed Syntax) -->
     <script type="application/json" x-ref="postsData" class="hidden">
-      {JSON.stringify(posts)}
+      {` ${JSON.stringify(posts)} `}
     </script>
 
     <!-- Alpine Logic -->
@@ -126,7 +126,7 @@ const posts = allPosts.map(post => {
           query: '',
           selectedTag: '',
           currentPage: 1,
-          pageSize: ${PAGE_SIZE},
+          pageSize: 5,
           posts: [],
           initPosts(json) {
             this.posts = JSON.parse(json);
