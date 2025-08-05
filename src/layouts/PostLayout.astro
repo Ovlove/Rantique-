@@ -2,18 +2,33 @@
 import BaseLayout from './BaseLayout.astro';
 import { slugify } from '../utils/slugify';
 import type { AstroComponentFactory } from 'astro';
+
 export let title: string;
 export let description: string;
 export let pubDate: Date;
 export let tags: string[] = [];
 export let Content: AstroComponentFactory;
+export let contentType: 'blog' | 'fiction' = 'blog';
+export let subtitle: string | undefined;
 ---
 
 <BaseLayout {title} {description}>
-  <article class="prose prose-lg max-w-3xl mx-auto dark:prose-invert">
-    <header class="mb-6">
+  <article 
+    class={`prose prose-lg max-w-3xl mx-auto dark:prose-invert ${
+      contentType === 'fiction' ? 'font-serif' : ''
+    }`}
+  >
+    <header class="mb-6 text-center">
       <h1 class="text-4xl font-bold">{title}</h1>
-      <p class="text-gray-500 text-sm">{pubDate.toDateString()}</p>
+
+      {subtitle && contentType === 'fiction' && (
+        <p class="text-lg italic text-gray-600 mt-2">{subtitle}</p>
+      )}
+
+      {contentType === 'blog' && (
+        <p class="text-gray-500 text-sm">{pubDate.toDateString()}</p>
+      )}
+
       {tags.length > 0 && (
         <div class="mt-2 space-x-2">
           {tags.map(tag => (
@@ -24,6 +39,7 @@ export let Content: AstroComponentFactory;
         </div>
       )}
     </header>
+
     <Content />
   </article>
 </BaseLayout>
