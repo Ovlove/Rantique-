@@ -5,7 +5,8 @@
   "private": true,
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "validate:blog": "node validate-blog-md.js",
+    "build": "npm run validate:blog && astro build",
     "preview": "astro preview",
     "format": "prettier --write ."
   },
