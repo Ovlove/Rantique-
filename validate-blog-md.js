@@ -1,36 +1,36 @@
-// validate-blog-md.js
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 
-const BLOG_DIR = './src/content/blog';
+const contentDir = './src/content/blog';
+const requiredFields = ['title', 'pubDate'];
 
-function checkFrontmatter(filePath) {
-  const raw = fs.readFileSync(filePath, 'utf-8');
-  const { data } = matter(raw);
-
-  if (!data.title) {
-    console.warn(`❌ Missing "title" in: ${filePath}`);
-  }
-
-  if (!data.pubDate) {
-    console.warn(`❌ Missing "pubDate" in: ${filePath}`);
-  }
+function walkDir(dir, callback) {
+  fs.readdirSync(dir).forEach(f => {
+    const dirPath = path.join(dir, f);
+    const isDirectory = fs.statSync(dirPath).isDirectory();
+    isDirectory ? walkDir(dirPath, callback) : callback(path.join(dir, f));
+  });
 }
 
-function validateBlogPosts() {
-  const files = fs.readdirSync(BLOG_DIR);
+const errors = [];
 
-  console.log(`🔍 Checking ${files.length} markdown files...\n`);
+walkDir(contentDir, filePath => {
+  if (!filePath.endsWith('.md') && !filePath.endsWith('.mdx')) return;
 
-  files.forEach((file) => {
-    if (file.endsWith('.md') || file.endsWith('.mdx')) {
-      const fullPath = path.join(BLOG_DIR, file);
-      checkFrontmatter(fullPath);
+  const fileContents = fs.readFileSync(filePath, 'utf8');
+  const { data } = matter(fileContents);
+
+  requiredFields.forEach(field => {
+    if (!data[field]) {
+      errors.push(`❌ Missing "${field}" in: ${filePath}`);
     }
   });
+});
 
-  console.log('\n✅ Validation complete.');
+if (errors.length > 0) {
+  console.error(errors.join('\n'));
+  process.exit(1); // ❌ Fail build if errors found
+} else {
+  console.log('✅ All blog frontmatter fields are valid.');
 }
-
-validateBlogPosts();
