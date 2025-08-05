@@ -6,8 +6,8 @@ export let title: string;
 export let description: string;
 
 const siteUrl = 'https://www.rantique.com';
-const twitterHandle = 'https://twitter.com/YourTwitterHandle'; // Replace with your Twitter URL or remove if none
-const gaMeasurementId = 'G-XXXXXXXXXX'; // Replace with your Google Analytics Measurement ID
+const twitterHandle = 'https://twitter.com/YourTwitterHandle'; // Update or remove
+const gaMeasurementId = 'G-XXXXXXXXXX'; // Replace when ready
 ---
 
 <html lang="en" class="scroll-smooth antialiased">
@@ -17,7 +17,7 @@ const gaMeasurementId = 'G-XXXXXXXXXX'; // Replace with your Google Analytics Me
     <meta name="description" content={description || 'Explore insights, stories, and perspectives with style.'} />
     <meta name="theme-color" content="#1A1A2E" />
 
-    <!-- Open Graph Meta -->
+    <!-- Open Graph -->
     <meta property="og:title" content={title || 'Rantique — A Boutique of Insightful Ideas'} />
     <meta property="og:description" content={description || 'Explore insights, stories, and perspectives with style.'} />
     <meta property="og:type" content="website" />
@@ -48,7 +48,7 @@ const gaMeasurementId = 'G-XXXXXXXXXX'; // Replace with your Google Analytics Me
     <!-- Alpine.js -->
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
-    <!-- MailerLite Universal -->
+    <!-- MailerLite (optional) -->
     <script>
       (function(w,d,e,u,f,l,n){
         w[f]=w[f]||function(){(w[f].q=w[f].q||[]).push(arguments);};
@@ -58,7 +58,7 @@ const gaMeasurementId = 'G-XXXXXXXXXX'; // Replace with your Google Analytics Me
       ml('account', '1638775');
     </script>
 
-    <!-- Google Analytics (GA4) - Uncomment when ready to deploy -->
+    <!-- Google Analytics (optional) -->
     <!-- 
     <script async src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`}></script>
     <script>
@@ -69,7 +69,7 @@ const gaMeasurementId = 'G-XXXXXXXXXX'; // Replace with your Google Analytics Me
     </script>
     -->
 
-    <!-- JSON-LD Structured Data for SEO -->
+    <!-- JSON-LD for SEO -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -117,7 +117,6 @@ const gaMeasurementId = 'G-XXXXXXXXXX'; // Replace with your Google Analytics Me
         ]
       }
     </script>
-
   </head>
 
   <body class="bg-[#FAFAFA] text-[#2E2E2E] dark:bg-[#0F0F1A] dark:text-gray-200 font-sans">
