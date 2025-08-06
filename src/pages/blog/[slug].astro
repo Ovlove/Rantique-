@@ -4,24 +4,19 @@ import { getCollection, getEntryBySlug } from 'astro:content';
 import { AstroError } from 'astro/errors';
 import Alert from '../../components/Alert.astro';
 
-// Get slug from route
 const { slug } = Astro.params;
 
-// Fetch the blog post by slug
 const post = await getEntryBySlug('blog', slug);
 if (!post) throw new AstroError(`Post not found: ${slug}`);
 
-// Render post to get content and metadata
 const { Content, data } = await post.render();
 
-// Estimate reading time
-const htmlContent = await Content();
-const plainText = htmlContent.toString().replace(/<[^>]+>/g, '');
+// ✅ Use .body from the unrendered post object for reading time
+const rawBody = post.body; // this is the raw Markdown/MDX string
 const wordsPerMinute = 200;
-const wordCount = plainText.trim().split(/\s+/).length;
+const wordCount = rawBody.trim().split(/\s+/).length;
 const readingTime = Math.max(1, Math.ceil(wordCount / wordsPerMinute));
 
-// Format publication date
 const formattedDate = data.pubDate
   ? new Date(data.pubDate).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -30,7 +25,6 @@ const formattedDate = data.pubDate
     })
   : 'Unknown Date';
 
-// Generate static paths
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
   return posts.map((post) => ({
