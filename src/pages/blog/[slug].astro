@@ -9,14 +9,20 @@ const { slug } = Astro.params;
 const post = await getEntryBySlug('blog', slug);
 if (!post) throw new AstroError(`Post not found: ${slug}`);
 
-const { Content, data } = await post.render();
+// Get raw body content
+const rawBody = post.body ?? '';
 
-// ✅ Use .body from the unrendered post object for reading time
-const rawBody = post.body; // this is the raw Markdown/MDX string
+// Estimate reading time
 const wordsPerMinute = 200;
 const wordCount = rawBody.trim().split(/\s+/).length;
 const readingTime = Math.max(1, Math.ceil(wordCount / wordsPerMinute));
 
+// Render content to get MDX component + metadata
+const rendered = await post.render();
+const Content = rendered.Content;
+const data = rendered.data ?? {};
+
+// Format publication date
 const formattedDate = data.pubDate
   ? new Date(data.pubDate).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -33,10 +39,10 @@ export async function getStaticPaths() {
 }
 ---
 
-<Layout title={data.title} description={data.description}>
+<Layout title={data.title || 'Untitled Post'} description={data.description || ''}>
   <main class="prose prose-lg prose-neutral mx-auto py-12 px-4">
     <header class="mb-6">
-      <h1>{data.title}</h1>
+      <h1>{data.title || 'Untitled'}</h1>
       <p class="text-gray-500 text-sm">
         Published on {formattedDate} &middot; ~{readingTime} min read
       </p>
