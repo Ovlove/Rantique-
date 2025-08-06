@@ -4,33 +4,31 @@ import { getCollection, getEntryBySlug } from 'astro:content';
 import { AstroError } from 'astro/errors';
 import Alert from '../../components/Alert.astro';
 
+// 1. Get the slug from the URL
 const { slug } = Astro.params;
 
-// Fetch blog post by slug
+// 2. Get the blog post by slug
 const post = await getEntryBySlug('blog', slug);
 if (!post) throw new AstroError(`Post not found: ${slug}`);
 
-const { Content, data } = await post.render();
+// 3. Extract content and metadata
+const { Content, data, body } = await post.render();
 
-// Estimate reading time
+// 4. Estimate reading time
 const wordsPerMinute = 200;
-const wordCount = post.body?.raw?.split(/\s+/).length || 0;
+const wordCount = body.raw?.split(/\s+/).length || 0;
 const readingTime = Math.max(1, Math.ceil(wordCount / wordsPerMinute));
 
-// Format publication date
-let formattedDate = 'Unknown Date';
-if (data?.pubDate) {
-  const date = new Date(data.pubDate);
-  if (!isNaN(date)) {
-    formattedDate = date.toLocaleDateString('en-US', {
+// 5. Format the publication date
+const formattedDate = data.pubDate
+  ? new Date(data.pubDate).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
-    });
-  }
-}
+    })
+  : 'Unknown Date';
 
-// Generate static paths
+// 6. Generate static paths for all blog posts
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
   return posts.map((post) => ({
@@ -48,6 +46,7 @@ export async function getStaticPaths() {
       </p>
     </header>
 
+    <!-- Render Markdown/MDX content -->
     <Content components={{ Alert }} />
   </main>
 </Layout>
