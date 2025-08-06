@@ -7,13 +7,11 @@ export default defineConfig({
   output: 'static',
   adapter: netlify(),
   integrations: [mdx()],
-  alias: {
-    '@components': path.resolve('./src/components'),
-    '@layouts': path.resolve('./src/layouts'),
-    '@pages': path.resolve('./src/pages'),
-    '@utils': path.resolve('./src/utils'),
-    '@styles': path.resolve('./src/styles'),
-    // Optional: only if you keep using ~
-    '~': path.resolve('./src'),
+  vite: {
+    resolve: {
+      alias: {
+        '~': path.resolve('./src'),
+      },
+    },
   },
 });
