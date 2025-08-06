@@ -1,5 +1,7 @@
 ---
-import SectionItem from '~/components/SectionItem.astro';
+// src/layouts/SectionIndexLayout.astro
+
+import SectionItem from '~/layouts/SectionItem.astro'; // ✅ Fixed path
 import type { CollectionEntry } from 'astro:content';
 
 const { title, description, posts, pageSize = 10 } = Astro.props;
@@ -8,7 +10,7 @@ const serializedPosts = JSON.stringify(
   posts.map((post) => ({
     title: post.data.title ?? '',
     description: post.data.description ?? '',
-    slug: post.slug, // removed pubDate from slug
+    slug: post.slug, // ✅ pubDate removed from slug
     tags: post.data.tags ?? [],
   }))
 );
@@ -106,7 +108,6 @@ const serializedPosts = JSON.stringify(
 </script>
 
 <style>
-  /* Optional styling */
   .search-box {
     width: 100%;
     padding: 0.5rem;
