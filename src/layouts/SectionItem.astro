@@ -1,0 +1,43 @@
+---
+// SectionItem.astro
+const { title, description, slug, tags = [] } = Astro.props;
+---
+
+<article class="section-item">
+  <a href={`/posts/${slug}/`}>
+    <h2>{title}</h2>
+  </a>
+  <p>{description}</p>
+  {tags.length > 0 && (
+    <ul class="tags">
+      {tags.map(tag => <li>{tag}</li>)}
+    </ul>
+  )}
+</article>
+
+<style>
+  .section-item {
+    border-bottom: 1px solid #ddd;
+    padding: 1rem 0;
+  }
+
+  .section-item h2 {
+    margin: 0;
+    font-size: 1.25rem;
+  }
+
+  .section-item .tags {
+    list-style: none;
+    padding: 0;
+    margin: 0.5rem 0 0;
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .section-item .tags li {
+    background: #eee;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+  }
+</style>
