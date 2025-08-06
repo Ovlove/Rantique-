@@ -13,5 +13,7 @@ export default defineConfig({
     '@pages': path.resolve('./src/pages'),
     '@utils': path.resolve('./src/utils'),
     '@styles': path.resolve('./src/styles'),
+    // Optional: only if you keep using ~
+    '~': path.resolve('./src'),
   },
 });
