@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/BaseLayout.astro';
+import Alert from '../components/Alert.astro'; // ✅ Add this line
 import { getCollection } from 'astro:content';
 
 function calculateReadingTime(text) {
@@ -43,6 +44,11 @@ const posts = rawPosts
     <p class="text-lg text-gray-600 dark:text-gray-400 max-w-xl mx-auto">
       A boutique of insightful ideas — exploring stories, commentary, and conversations that matter.
     </p>
+
+    <!-- ✅ Alert Message -->
+    <Alert type="success">
+      🎉 Rantique is live — thanks for being here early!
+    </Alert>
 
     <!-- Search Input -->
     <div class="mb-8 max-w-md mx-auto">
