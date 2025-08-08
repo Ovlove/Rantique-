@@ -1,12 +1,9 @@
 ---
 import { getEntryBySlug } from "astro:content";
-import Layout from "../../layouts/Layout.astro";
+import PostLayout from "../../layouts/PostLayout.astro";
 
 export async function getStaticPaths() {
-  // Get all fiction posts
   const posts = (await import.meta.glob("../../content/fiction/*.md", { eager: true }));
-
-  // Generate paths from filenames (removing folder & extension)
   return Object.keys(posts).map((path) => {
     const slug = path.split("/").pop().replace(".md", "");
     return { params: { slug } };
@@ -15,11 +12,8 @@ export async function getStaticPaths() {
 
 export async function get({ params }) {
   const { slug } = params;
-
-  // Try to fetch the post by slug
   const post = await getEntryBySlug("fiction", slug);
 
-  // If no post found, show 404 instead of breaking Netlify build
   if (!post) {
     return {
       status: 404,
@@ -33,10 +27,12 @@ export async function get({ params }) {
 }
 ---
 
-<Layout title={post.data.title}>
-  <h1>{post.data.title}</h1>
-  <p><em>{post.data.date}</em></p>
-  <article>
-    <post.Content />
-  </article>
-</Layout>
+<PostLayout 
+  title={post.data.title} 
+  pubDate={new Date(post.data.date)} 
+  contentType="fiction"
+  Content={post.Content}
+  subtitle={post.data.subtitle}
+  tags={post.data.tags ?? []}
+>
+</PostLayout>
