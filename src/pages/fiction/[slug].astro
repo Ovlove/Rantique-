@@ -1,40 +1,46 @@
 ---
-import { getEntryBySlug } from "astro:content";
-import PostLayout from "../../layouts/PostLayout.astro";
+import { getEntryBySlug, getCollection } from 'astro:content';
+import { AstroError } from 'astro/errors';
+import PostLayout from '../../layouts/PostLayout.astro';
+import Alert from '../../components/Alert.astro';
 
+const { slug } = Astro.params;
+
+// Fetch the fiction post by slug
+const post = await getEntryBySlug('fiction', slug);
+if (!post) throw new AstroError(`Fiction post not found: ${slug}`);
+
+const { Content, data } = await post.render();
+
+// Handle publication date
+const pubDate = data?.date instanceof Date ? data.date : null;
+
+// Reading time calculation based on word count in frontmatter or fallback to raw body
+const wordsPerMinute = 200;
+const wordCount = data?.readingTimeWords ?? (post.body?.raw?.trim().split(/\s+/).length || 0);
+const readingTime = Math.max(1, Math.ceil(wordCount / wordsPerMinute));
+
+// Format date safely
+const formattedDate = pubDate
+  ? pubDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+  : 'Unknown Date';
+
+// Static paths for pre-rendering all fiction posts
 export async function getStaticPaths() {
-  // Get all fiction posts
-  const posts = (await import.meta.glob("../../content/fiction/*.md", { eager: true }));
-
-  return Object.keys(posts).map((path) => {
-    const slug = path.split("/").pop().replace(".md", "");
-    return { params: { slug } };
-  });
-}
-
-export async function get({ params }) {
-  const { slug } = params;
-  const post = await getEntryBySlug("fiction", slug);
-
-  if (!post) {
-    return {
-      status: 404,
-      body: "Post not found",
-    };
-  }
-
-  return {
-    props: { post },
-  };
+  const posts = await getCollection('fiction');
+  return posts.map(post => ({
+    params: { slug: post.slug },
+  }));
 }
 ---
 
 <PostLayout
-  title={post.data.title}
-  description={post.data.description || ''}
-  pubDate={post.data.date}
-  tags={post.data.tags || []}
-  subtitle={post.data.subtitle}
+  title={data?.title ?? 'Untitled'}
+  description={data?.description ?? ''}
+  pubDate={pubDate}
+  tags={data?.tags || []}
+  subtitle={data?.subtitle}
   contentType="fiction"
-  Content={post.Content}
-/>
+>
+  <Content components={{ Alert }} />
+</PostLayout>
