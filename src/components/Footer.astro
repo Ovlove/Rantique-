@@ -1,25 +1,35 @@
 <footer class="bg-[#1A1A2E] text-white py-12 mt-16 border-t border-gray-700">
-  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 text-center">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 text-center">
 
     <!-- Logo & Tagline -->
     <div class="space-y-1">
-      <a href="/" aria-label="Rantique Home" class="inline-block text-2xl font-bold tracking-wide text-[#7F5AF0] hover:text-[#9B7BFF] transition">
+      <a
+        href="/"
+        aria-label="Rantique Home"
+        class="inline-block text-3xl font-extrabold tracking-wide text-[#7F5AF0] hover:text-[#9B7BFF] transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-[#9B7BFF] rounded"
+      >
         Rantique
       </a>
-      <p class="text-sm text-gray-400 italic">A Boutique of Insightful Ideas</p>
+      <p class="text-sm text-gray-400 italic select-none">A Boutique of Insightful Ideas</p>
     </div>
 
     <!-- Navigation -->
-    <nav aria-label="Footer Navigation" class="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm">
-      <a href="/blog" class="text-gray-300 hover:text-white transition focus:outline-none focus:ring-2 focus:ring-[#7F5AF0] rounded">Blog</a>
-      <a href="/fiction" class="text-gray-300 hover:text-white transition focus:outline-none focus:ring-2 focus:ring-[#7F5AF0] rounded">Fiction</a>
-      <a href="/about" class="text-gray-300 hover:text-white transition focus:outline-none focus:ring-2 focus:ring-[#7F5AF0] rounded">About</a>
-      <a href="/contact" class="text-gray-300 hover:text-white transition focus:outline-none focus:ring-2 focus:ring-[#7F5AF0] rounded">Contact</a>
-      <a href="/privacy-policy" class="text-gray-300 hover:text-white transition focus:outline-none focus:ring-2 focus:ring-[#7F5AF0] rounded">Privacy</a>
+    <nav
+      aria-label="Footer Navigation"
+      class="flex flex-wrap justify-center gap-x-8 gap-y-3 text-sm font-medium"
+    >
+      <a href="/blog" class="footer-link">Blog</a>
+      <a href="/fiction" class="footer-link">Fiction</a>
+      <a href="/about" class="footer-link">About</a>
+      <a href="/contact" class="footer-link">Contact</a>
+      <a href="/privacy-policy" class="footer-link">Privacy</a>
     </nav>
 
     <!-- Tagline or Quote -->
-    <p class="text-sm text-gray-500 italic max-w-xl mx-auto" aria-label="Site motto or quote">
+    <p
+      class="text-sm text-gray-500 italic max-w-xl mx-auto px-4 select-none"
+      aria-label="Site motto or quote"
+    >
       &ldquo;Thoughts become words. Words become art.&rdquo;
     </p>
 
@@ -29,19 +39,54 @@
     </div>
 
     <!-- Social Icons -->
-    <div class="flex justify-center space-x-6 mt-6" role="list" aria-label="Social media links">
-      <a href="#" class="text-gray-400 hover:text-white transition" aria-label="Twitter" role="listitem" target="_blank" rel="noopener noreferrer">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <path d="M23 3a10.9 10.9 0 01-3.14 1.53A4.48 4.48 0 0016 2a4.48 4.48 0 00-4.47 4.48c0 .35.04.7.12 1.03A12.93 12.93 0 013 4.12a4.51 4.51 0 001.39 6A4.48 4.48 0 012 9.71v.06a4.48 4.48 0 003.6 4.4 4.52 4.52 0 01-2.01.08 4.48 4.48 0 004.19 3.12A9 9 0 013 20a12.73 12.73 0 006.92 2c8.29 0 12.82-6.87 12.82-12.82 0-.2 0-.39-.01-.58A9.18 9.18 0 0023 3z"/>
+    <div
+      class="flex justify-center space-x-8 mt-8"
+      role="list"
+      aria-label="Social media links"
+    >
+      <a
+        href="#"
+        class="social-icon"
+        aria-label="Twitter"
+        role="listitem"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-6 w-6"
+          fill="currentColor"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <path
+            d="M23 3a10.9 10.9 0 01-3.14 1.53A4.48 4.48 0 0016 2a4.48 4.48 0 00-4.47 4.48c0 .35.04.7.12 1.03A12.93 12.93 0 013 4.12a4.51 4.51 0 001.39 6A4.48 4.48 0 012 9.71v.06a4.48 4.48 0 003.6 4.4 4.52 4.52 0 01-2.01.08 4.48 4.48 0 004.19 3.12A9 9 0 013 20a12.73 12.73 0 006.92 2c8.29 0 12.82-6.87 12.82-12.82 0-.2 0-.39-.01-.58A9.18 9.18 0 0023 3z"
+          />
         </svg>
       </a>
-      <!-- Add more social icons here if needed -->
+      <!-- Add more social icons with same classes and accessible markup -->
     </div>
 
     <!-- Copyright -->
-    <p class="text-xs text-gray-500 mt-6" aria-label="Copyright notice">
+    <p class="text-xs text-gray-500 mt-8 select-none" aria-label="Copyright notice">
       &copy; {new Date().getFullYear()} Rantique. All rights reserved.
     </p>
 
   </div>
+
+  <style>
+    a.footer-link {
+      @apply text-gray-300 hover:text-white transition focus:outline-none focus:ring-2 focus:ring-[#7F5AF0] rounded;
+    }
+    a.footer-link:focus-visible {
+      @apply ring-2 ring-[#7F5AF0] outline-none;
+    }
+    a.social-icon {
+      @apply text-gray-400 hover:text-white transition focus:outline-none focus:ring-2 focus:ring-[#7F5AF0] rounded;
+    }
+    a.social-icon:focus-visible {
+      @apply ring-2 ring-[#7F5AF0] outline-none;
+    }
+  </style>
 </footer>
