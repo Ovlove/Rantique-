@@ -3,7 +3,9 @@ import { getEntryBySlug } from "astro:content";
 import PostLayout from "../../layouts/PostLayout.astro";
 
 export async function getStaticPaths() {
+  // Get all fiction posts
   const posts = (await import.meta.glob("../../content/fiction/*.md", { eager: true }));
+
   return Object.keys(posts).map((path) => {
     const slug = path.split("/").pop().replace(".md", "");
     return { params: { slug } };
@@ -27,12 +29,12 @@ export async function get({ params }) {
 }
 ---
 
-<PostLayout 
-  title={post.data.title} 
-  pubDate={new Date(post.data.date)} 
+<PostLayout
+  title={post.data.title}
+  description={post.data.description || ''}
+  pubDate={post.data.date}
+  tags={post.data.tags || []}
+  subtitle={post.data.subtitle}
   contentType="fiction"
   Content={post.Content}
-  subtitle={post.data.subtitle}
-  tags={post.data.tags ?? []}
->
-</PostLayout>
+/>
