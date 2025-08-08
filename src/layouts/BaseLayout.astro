@@ -11,7 +11,7 @@ const gaMeasurementId = 'G-XXXXXXXXXX'; // Replace when ready
 
 // Helper: Return JSON-LD for social links only if twitterHandle is set and valid
 const sameAsLinks = twitterHandle && twitterHandle.trim() !== ''
-  ? [`"${twitterHandle}"`]
+  ? [twitterHandle]
   : [];
 ---
 
@@ -131,5 +131,30 @@ const sameAsLinks = twitterHandle && twitterHandle.trim() !== ''
       <slot />
     </main>
     <Footer />
+
+    <!-- Dark Mode Toggle Script -->
+    <script>
+      (() => {
+        const root = document.documentElement;
+        const themeKey = 'theme-preference';
+
+        // Initialize theme
+        const saved = localStorage.getItem(themeKey);
+        if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          root.classList.add('dark');
+        }
+
+        // Expose toggle function for dark mode (call from your header button)
+        window.toggleDarkMode = () => {
+          if (root.classList.contains('dark')) {
+            root.classList.remove('dark');
+            localStorage.setItem(themeKey, 'light');
+          } else {
+            root.classList.add('dark');
+            localStorage.setItem(themeKey, 'dark');
+          }
+        };
+      })();
+    </script>
   </body>
 </html>
