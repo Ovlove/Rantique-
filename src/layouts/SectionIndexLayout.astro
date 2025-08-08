@@ -1,10 +1,15 @@
 ---
-import SectionItem from './SectionItem.astro'; // ✅ Local import (same folder)
+import SectionItem from '../components/SectionItem.astro'; // Updated path for components folder
 import type { CollectionEntry } from 'astro:content';
 
-const { title = 'Untitled Section', description = '', posts = [], pageSize = 10 } = Astro.props;
+const {
+  title = 'Untitled Section',
+  description = '',
+  posts = [],
+  pageSize = 10
+} = Astro.props;
 
-// ✅ Safer JSON serialization to prevent HTML/JS injection issues
+// Safer JSON serialization to prevent breaking x-init
 const serializedPosts = JSON.stringify(
   posts.map((post) => ({
     title: post?.data?.title ?? '(No title)',
@@ -20,28 +25,31 @@ const serializedPosts = JSON.stringify(
     <h1 class="section__title">{title}</h1>
     {description && <p class="section__description">{description}</p>}
 
-    <div 
-      x-data="sectionList()" 
-      x-init={`initPosts('${serializedPosts}')`} 
+    <div
+      x-data="sectionList()"
+      x-init={`initPosts('${serializedPosts}')`}
       class="section__controls"
     >
-      <input 
-        x-model="query" 
-        type="text" 
-        placeholder="Search posts..." 
+      <!-- Search -->
+      <input
+        x-model="query"
+        type="text"
+        placeholder="Search posts..."
         class="search-box"
       />
 
+      <!-- Tag filter -->
       <div class="tags">
         <template x-for="tag in uniqueTags" :key="tag">
-          <button 
-            :class="{'active': selectedTag === tag}" 
+          <button
+            :class="{'active': selectedTag === tag}"
             @click="toggleTag(tag)"
             x-text="tag"
           ></button>
         </template>
       </div>
 
+      <!-- Posts -->
       <div class="posts-list">
         <template x-for="(post, index) in filteredPosts()" :key="post.slug || index">
           <div x-show="showPage(index)">
@@ -55,6 +63,7 @@ const serializedPosts = JSON.stringify(
         </template>
       </div>
 
+      <!-- Pagination -->
       <div class="pagination" x-show="totalPages() > 1">
         <button @click="currentPage = Math.max(currentPage - 1, 1)" :disabled="currentPage === 1">Prev</button>
         <span x-text="currentPage"></span>
@@ -75,7 +84,7 @@ const serializedPosts = JSON.stringify(
       initPosts(json) {
         try {
           this.posts = JSON.parse(json);
-        } catch (e) {
+        } catch {
           this.posts = [];
         }
       },
