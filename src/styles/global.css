@@ -7,10 +7,13 @@ body {
   font-family: theme('fontFamily.sans');
   background-color: theme('colors.base');
   color: theme('colors.primary');
+  /* Consider adding smooth font rendering */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 a {
-  @apply text-primary hover:underline;
+  @apply text-primary hover:underline transition-colors duration-200;
 }
 
 /* MailerLite Embedded Form Styling */
@@ -30,17 +33,22 @@ a {
 .ml-embedded input[type="email"]:focus {
   @apply border-purple-500 bg-[#151533];
   @apply dark:bg-[#1a1a40];
+  outline: 2px solid #7F5AF0; /* Visible focus outline for accessibility */
+  outline-offset: 2px;
 }
 
 .ml-embedded button[type="submit"] {
   @apply bg-purple-600 text-white font-semibold px-4 py-2 rounded-md cursor-pointer transition-colors duration-300 border-0;
   @apply dark:bg-purple-700;
+  /* Add focus ring for accessibility */
+  outline-offset: 2px;
 }
 
 .ml-embedded button[type="submit"]:hover,
 .ml-embedded button[type="submit"]:focus {
   @apply bg-purple-700 outline-none;
   @apply dark:bg-purple-800;
+  outline: 2px solid #7F5AF0; /* Visible focus ring */
 }
 
 .ml-embedded .ml-success-message,
