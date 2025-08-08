@@ -1,5 +1,5 @@
 ---
-import SectionItem from '~/layouts/SectionItem.astro'; // ✅ Correct import
+import SectionItem from '~/layouts/SectionItem.astro';
 import type { CollectionEntry } from 'astro:content';
 
 const { title, description, posts, pageSize = 10 } = Astro.props;
@@ -8,7 +8,7 @@ const serializedPosts = JSON.stringify(
   posts.map((post) => ({
     title: post.data.title ?? '',
     description: post.data.description ?? '',
-    slug: post.slug, // ✅ pubDate removed
+    slug: post.slug,
     tags: post.data.tags ?? [],
   }))
 );
@@ -20,8 +20,7 @@ const serializedPosts = JSON.stringify(
     {description && <p class="section__description">{description}</p>}
 
     <div 
-      x-data="sectionList()" 
-      x-init={`initPosts('${serializedPosts}')`} 
+      x-data="sectionList({ posts: JSON.parse(`{serializedPosts}`), pageSize: {pageSize} })"
       class="section__controls"
     >
       <input 
@@ -65,16 +64,13 @@ const serializedPosts = JSON.stringify(
 </section>
 
 <script>
-  function sectionList() {
+  function sectionList({ posts = [], pageSize = 10 }) {
     return {
       query: '',
       selectedTag: '',
       currentPage: 1,
-      pageSize: {{ pageSize }},
-      posts: [],
-      initPosts(json) {
-        this.posts = JSON.parse(json);
-      },
+      pageSize,
+      posts,
       get uniqueTags() {
         return [...new Set(this.posts.flatMap(p => Array.isArray(p.tags) ? p.tags : []))].sort();
       },
