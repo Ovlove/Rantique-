@@ -1,9 +1,10 @@
 ---
-import SectionItem from '~/layouts/SectionItem.astro';
+import SectionItem from './SectionItem.astro'; // ✅ Local import (same folder)
 import type { CollectionEntry } from 'astro:content';
 
 const { title = 'Untitled Section', description = '', posts = [], pageSize = 10 } = Astro.props;
 
+// ✅ Safer JSON serialization to prevent HTML/JS injection issues
 const serializedPosts = JSON.stringify(
   posts.map((post) => ({
     title: post?.data?.title ?? '(No title)',
@@ -11,7 +12,7 @@ const serializedPosts = JSON.stringify(
     slug: post?.slug ?? '',
     tags: Array.isArray(post?.data?.tags) ? post.data.tags : [],
   }))
-);
+).replace(/</g, '\\u003c');
 ---
 
 <section class="section">
@@ -42,13 +43,13 @@ const serializedPosts = JSON.stringify(
       </div>
 
       <div class="posts-list">
-        <template x-for="(post, index) in filteredPosts()" :key="post.slug">
+        <template x-for="(post, index) in filteredPosts()" :key="post.slug || index">
           <div x-show="showPage(index)">
             <SectionItem
-              title={post.title}
-              description={post.description}
-              slug={post.slug}
-              tags={post.tags}
+              title={post.title || '(No title)'}
+              description={post.description || ''}
+              slug={post.slug || '#'}
+              tags={post.tags || []}
             />
           </div>
         </template>
