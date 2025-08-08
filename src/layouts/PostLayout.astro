@@ -5,17 +5,19 @@ import type { AstroComponentFactory } from 'astro';
 
 export let title: string;
 export let description: string;
-export let pubDate: Date;
+export let pubDate: Date | null = null;
 export let tags: string[] = [];
 export let Content: AstroComponentFactory;
 export let contentType: 'blog' | 'fiction' = 'blog';
 export let subtitle: string | undefined;
 
-const formattedDate = pubDate.toLocaleDateString(undefined, {
-  year: 'numeric',
-  month: 'long',
-  day: 'numeric',
-});
+const formattedDate = pubDate
+  ? pubDate.toLocaleDateString(undefined, {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    })
+  : 'Unknown date';
 ---
 
 <BaseLayout {title} {description}>
@@ -31,8 +33,11 @@ const formattedDate = pubDate.toLocaleDateString(undefined, {
         <p class="text-lg italic text-gray-600 dark:text-gray-400 mt-2">{subtitle}</p>
       )}
 
-      {contentType === 'blog' && (
-        <time class="text-gray-500 dark:text-gray-400 text-sm" dateTime={pubDate.toISOString()}>
+      {contentType === 'blog' && pubDate && (
+        <time
+          class="text-gray-500 dark:text-gray-400 text-sm"
+          dateTime={pubDate.toISOString()}
+        >
           {formattedDate}
         </time>
       )}
@@ -41,9 +46,11 @@ const formattedDate = pubDate.toLocaleDateString(undefined, {
         <nav aria-label="Post tags" class="mt-4 space-x-2">
           {tags.map(tag => (
             <a
+              key={tag}
               href={`/tags/${slugify(tag)}/`}
               class="inline-block bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 px-3 py-1 rounded text-xs font-medium hover:bg-gray-300 dark:hover:bg-gray-600 transition"
               rel="noopener noreferrer"
+              aria-label={`View posts tagged with ${tag}`}
             >
               #{tag}
             </a>
