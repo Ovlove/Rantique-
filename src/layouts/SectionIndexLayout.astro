@@ -1,5 +1,5 @@
 ---
-import SectionItem from '../layouts/SectionItem.astro'; // ✅ Correct path for your project
+import SectionItem from '../components/SectionItem.astro';
 import type { CollectionEntry } from 'astro:content';
 
 const {
@@ -9,7 +9,7 @@ const {
   pageSize = 10
 } = Astro.props;
 
-// ✅ Safer JSON serialization to prevent breaking x-init
+// Safer JSON serialization to prevent breaking x-init
 const serializedPosts = JSON.stringify(
   posts.map((post) => ({
     title: post?.data?.title ?? '(No title)',
@@ -65,9 +65,13 @@ const serializedPosts = JSON.stringify(
 
       <!-- Pagination -->
       <div class="pagination" x-show="totalPages() > 1">
-        <button @click="currentPage = Math.max(currentPage - 1, 1)" :disabled="currentPage === 1">Prev</button>
+        <button @click="currentPage = Math.max(currentPage - 1, 1)" :disabled="currentPage === 1">
+          Prev
+        </button>
         <span x-text="currentPage"></span>
-        <button @click="currentPage = Math.min(currentPage + 1, totalPages())" :disabled="currentPage === totalPages()">Next</button>
+        <button @click="currentPage = Math.min(currentPage + 1, totalPages())" :disabled="currentPage === totalPages()">
+          Next
+        </button>
       </div>
     </div>
   </div>
@@ -79,7 +83,7 @@ const serializedPosts = JSON.stringify(
       query: '',
       selectedTag: '',
       currentPage: 1,
-      pageSize, // ✅ Fixed — no {{ }} — uses variable directly
+      pageSize,
       posts: [],
       initPosts(json) {
         try {
