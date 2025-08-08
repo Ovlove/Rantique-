@@ -1,6 +1,6 @@
 ---
 import Layout from '../layouts/BaseLayout.astro';
-import Alert from '../components/Alert.astro'; // ✅ Add this line
+import Alert from '../components/Alert.astro';
 import { getCollection } from 'astro:content';
 
 function calculateReadingTime(text) {
@@ -26,58 +26,76 @@ const posts = rawPosts
     }),
     readingTime: calculateReadingTime(post.body?.raw || ''),
   }));
+
+// Optional: pick first post as featured
+const featuredPost = posts[0];
+const otherPosts = posts.slice(1);
 ---
 
 <Layout title="Rantique – A Boutique of Insightful Ideas" description="Articles, opinions, and short fiction that spark thought.">
-  <main
-    class="px-4 md:px-8 lg:px-16 py-16 space-y-12 max-w-4xl mx-auto text-center"
-    x-data="postsData"
-    x-init="initPosts($refs.rawJson.textContent)"
-  >
-    <!-- Brand Logo -->
-    <img src="/favicon-32x32.png" alt="Rantique Logo" class="mx-auto w-12 h-12" loading="lazy" />
+  <main class="max-w-4xl mx-auto px-6 py-16 space-y-16">
 
-    <!-- Main Heading -->
-    <h1 class="text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white">
-      Welcome to <span class="text-purple-600 dark:text-purple-400">Rantique</span>
-    </h1>
-    <p class="text-lg text-gray-600 dark:text-gray-400 max-w-xl mx-auto">
-      A boutique of insightful ideas — exploring stories, commentary, and conversations that matter.
-    </p>
+    <!-- Hero Section -->
+    <section class="text-center">
+      <img src="/favicon-32x32.png" alt="Rantique Logo" class="mx-auto w-14 h-14 mb-6" loading="lazy" />
+      <h1 class="text-5xl font-extrabold tracking-tight text-gray-900 dark:text-white">
+        Welcome to <span class="text-purple-600 dark:text-purple-400">Rantique</span>
+      </h1>
+      <p class="mt-4 text-lg text-gray-600 dark:text-gray-300 max-w-xl mx-auto">
+        A boutique of insightful ideas — exploring stories, commentary, and conversations that matter.
+      </p>
+      <Alert type="success" class="mt-6 max-w-md mx-auto">
+        🎉 Rantique is live — thanks for being here early!
+      </Alert>
+    </section>
 
-    <!-- ✅ Alert Message -->
-    <Alert type="success">
-      🎉 Rantique is live — thanks for being here early!
-    </Alert>
-
-    <!-- Search Input -->
-    <div class="mb-8 max-w-md mx-auto">
+    <!-- Search -->
+    <section class="max-w-md mx-auto">
       <input
         type="search"
-        placeholder="Search posts..."
-        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-gray-800 dark:text-white"
+        placeholder="Search blog posts..."
+        class="w-full px-5 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-gray-800 dark:text-white"
+        x-data=""
         x-model.debounce.300ms="query"
         aria-label="Search blog posts"
       />
-    </div>
+    </section>
 
-    <!-- Latest Blog Posts -->
-    <section class="space-y-6 text-left max-w-3xl mx-auto" aria-live="polite" aria-atomic="true">
-      <h2 class="text-2xl font-semibold text-gray-800 dark:text-white mb-4">Latest Posts</h2>
-      <ul class="space-y-6">
+    <!-- Featured Post -->
+    {featuredPost && (
+      <section aria-label="Featured post" class="border rounded-lg p-6 shadow-md dark:bg-[#1A1A2E]">
+        <a
+          href={`/blog/${featuredPost.slug}/`}
+          class="text-2xl font-bold text-purple-700 dark:text-purple-400 hover:underline"
+        >
+          {featuredPost.title}
+        </a>
+        <p class="mt-2 text-gray-700 dark:text-gray-300">{featuredPost.description}</p>
+        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+          {featuredPost.formattedDate} · {featuredPost.readingTime} min read
+        </p>
+      </section>
+    )}
+
+    <!-- Blog Posts List -->
+    <section aria-live="polite" aria-atomic="true" class="space-y-8">
+      <h2 class="text-3xl font-semibold text-gray-900 dark:text-white">Latest Posts</h2>
+      <ul class="space-y-8">
         <template x-for="post in filteredPosts()" :key="post.slug">
-          <li class="border-b pb-4 list-none">
+          <li class="border-b pb-4">
             <a
               :href="`/blog/${post.slug}/`"
-              class="text-xl font-bold text-purple-700 dark:text-purple-400 hover:underline"
+              class="text-xl font-semibold text-purple-700 dark:text-purple-400 hover:underline"
               x-html="highlight(post.title)"
             ></a>
             <p
-              class="text-sm text-gray-600 dark:text-gray-400"
+              class="mt-1 text-gray-600 dark:text-gray-400 text-sm"
               x-show="post.description"
               x-html="highlight(post.description)"
             ></p>
-            <p class="text-xs text-gray-500 dark:text-gray-400" x-text="post.formattedDate + ' · ' + post.readingTime + ' min read'"></p>
+            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              <span x-text="post.formattedDate"></span> · <span x-text="post.readingTime + ' min read'"></span>
+            </p>
           </li>
         </template>
       </ul>
@@ -89,19 +107,21 @@ const posts = rawPosts
       </p>
     </section>
 
-    <!-- Optional: Fiction Teaser -->
-    <section class="mt-12">
-      <a href="/fiction/" class="inline-block mt-6 text-purple-600 dark:text-purple-400 underline hover:text-purple-800 dark:hover:text-purple-300 text-sm">
-        Discover our original short fiction →
+    <!-- Fiction Callout -->
+    <section class="text-center mt-12">
+      <a
+        href="/fiction/"
+        class="inline-block px-6 py-3 bg-purple-600 hover:bg-purple-700 dark:bg-purple-500 dark:hover:bg-purple-600 text-white rounded-md font-semibold transition"
+      >
+        Discover Our Original Short Fiction →
       </a>
     </section>
 
-    <!-- Raw JSON for Alpine -->
+    <!-- Alpine.js Raw JSON + Script -->
     <script type="application/json" x-ref="rawJson" class="hidden">
       {JSON.stringify(posts)}
     </script>
 
-    <!-- Alpine.js Logic -->
     <script>
       document.addEventListener('alpine:init', () => {
         Alpine.data('postsData', () => ({
