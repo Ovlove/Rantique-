@@ -2,14 +2,14 @@
 import SectionItem from '~/layouts/SectionItem.astro';
 import type { CollectionEntry } from 'astro:content';
 
-const { title, description, posts, pageSize = 10 } = Astro.props;
+const { title = 'Untitled Section', description = '', posts = [], pageSize = 10 } = Astro.props;
 
 const serializedPosts = JSON.stringify(
   posts.map((post) => ({
-    title: post.data.title ?? '',
-    description: post.data.description ?? '',
-    slug: post.slug,
-    tags: post.data.tags ?? [],
+    title: post?.data?.title ?? '(No title)',
+    description: post?.data?.description ?? '',
+    slug: post?.slug ?? '',
+    tags: Array.isArray(post?.data?.tags) ? post.data.tags : [],
   }))
 );
 ---
@@ -20,7 +20,8 @@ const serializedPosts = JSON.stringify(
     {description && <p class="section__description">{description}</p>}
 
     <div 
-      x-data="sectionList({ posts: JSON.parse(`{serializedPosts}`), pageSize: {pageSize} })"
+      x-data="sectionList()" 
+      x-init={`initPosts('${serializedPosts}')`} 
       class="section__controls"
     >
       <input 
@@ -53,7 +54,6 @@ const serializedPosts = JSON.stringify(
         </template>
       </div>
 
-      <!-- Pagination Controls -->
       <div class="pagination" x-show="totalPages() > 1">
         <button @click="currentPage = Math.max(currentPage - 1, 1)" :disabled="currentPage === 1">Prev</button>
         <span x-text="currentPage"></span>
@@ -64,13 +64,20 @@ const serializedPosts = JSON.stringify(
 </section>
 
 <script>
-  function sectionList({ posts = [], pageSize = 10 }) {
+  function sectionList() {
     return {
       query: '',
       selectedTag: '',
       currentPage: 1,
-      pageSize,
-      posts,
+      pageSize: {{ pageSize }},
+      posts: [],
+      initPosts(json) {
+        try {
+          this.posts = JSON.parse(json);
+        } catch (e) {
+          this.posts = [];
+        }
+      },
       get uniqueTags() {
         return [...new Set(this.posts.flatMap(p => Array.isArray(p.tags) ? p.tags : []))].sort();
       },
