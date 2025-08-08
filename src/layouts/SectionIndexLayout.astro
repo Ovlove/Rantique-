@@ -8,7 +8,7 @@ const {
   pageSize = 10
 } = Astro.props;
 
-// Pass minimal JSON to Alpine (no HTML markup)
+// Serialize posts safely for Alpine.js
 const serializedPosts = JSON.stringify(
   posts.map(post => ({
     title: post?.title ?? '(No title)',
@@ -29,7 +29,7 @@ const serializedPosts = JSON.stringify(
     </header>
 
     <div
-      x-data="sectionList()"
+      x-data="sectionList({ pageSize: +`${pageSize}` })"
       x-init={`initPosts('${serializedPosts}')`}
       role="region"
       aria-label="Posts listing"
@@ -37,7 +37,7 @@ const serializedPosts = JSON.stringify(
     >
       <!-- Search -->
       <input
-        x-model="query"
+        x-model.debounce.300ms="query"
         type="search"
         placeholder="Search posts..."
         aria-label="Search posts"
@@ -66,12 +66,13 @@ const serializedPosts = JSON.stringify(
       <!-- Posts list -->
       <section class="space-y-8" aria-live="polite" aria-relevant="additions removals">
         <template x-for="(post, index) in filteredPosts()" :key="post.slug || index">
-          <article x-show="showPage(index)" x-transition class="rounded-md border border-gray-300 dark:border-gray-700 p-4 bg-white dark:bg-[#111122] shadow-sm">
+          <article
+            x-show="showPage(index)"
+            x-transition
+            class="rounded-md border border-gray-300 dark:border-gray-700 p-4 bg-white dark:bg-[#111122] shadow-sm"
+            tabindex="0"
+          >
             <SectionItem
-              title=""
-              description=""
-              slug=""
-              tags=""
               x-bind:title="post.title"
               x-bind:description="post.description"
               x-bind:slug="post.slug"
@@ -79,6 +80,7 @@ const serializedPosts = JSON.stringify(
             />
           </article>
         </template>
+
         <template x-if="filteredPosts().length === 0">
           <p class="text-center text-gray-500 dark:text-gray-400">No posts found.</p>
         </template>
@@ -91,7 +93,7 @@ const serializedPosts = JSON.stringify(
         x-show="totalPages() > 1"
       >
         <button
-          @click="currentPage = Math.max(currentPage - 1, 1)"
+          @click="changePage(currentPage - 1)"
           :disabled="currentPage === 1"
           class="px-4 py-2 rounded-md bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#7F5AF0] hover:text-white transition focus:outline-none focus:ring-2 focus:ring-[#7F5AF0]"
         >
@@ -104,7 +106,7 @@ const serializedPosts = JSON.stringify(
         ></span>
 
         <button
-          @click="currentPage = Math.min(currentPage + 1, totalPages())"
+          @click="changePage(currentPage + 1)"
           :disabled="currentPage === totalPages()"
           class="px-4 py-2 rounded-md bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#7F5AF0] hover:text-white transition focus:outline-none focus:ring-2 focus:ring-[#7F5AF0]"
         >
@@ -116,13 +118,14 @@ const serializedPosts = JSON.stringify(
 </section>
 
 <script>
-  function sectionList() {
+  function sectionList({ pageSize = 10 }) {
     return {
       query: '',
       selectedTag: '',
       currentPage: 1,
       pageSize,
       posts: [],
+
       initPosts(json) {
         try {
           this.posts = JSON.parse(json);
@@ -130,15 +133,18 @@ const serializedPosts = JSON.stringify(
           this.posts = [];
         }
       },
+
       get uniqueTags() {
         return [...new Set(this.posts.flatMap(p => Array.isArray(p.tags) ? p.tags : []))].sort();
       },
+
       toggleTag(tag) {
         this.selectedTag = this.selectedTag === tag ? '' : tag;
-        this.currentPage = 1; // Reset to first page when changing tag
+        this.currentPage = 1;
       },
+
       filteredPosts() {
-        const q = this.query.toLowerCase();
+        const q = this.query.toLowerCase().trim();
         return this.posts.filter(p => {
           const title = p.title?.toLowerCase() || '';
           const description = p.description?.toLowerCase() || '';
@@ -150,13 +156,23 @@ const serializedPosts = JSON.stringify(
           return textMatch && tagMatch;
         });
       },
+
       totalPages() {
-        return Math.ceil(this.filteredPosts().length / this.pageSize);
+        return Math.ceil(this.filteredPosts().length / this.pageSize) || 1;
       },
+
       showPage(index) {
         const start = (this.currentPage - 1) * this.pageSize;
         return index >= start && index < start + this.pageSize;
-      }
+      },
+
+      changePage(newPage) {
+        if (newPage >= 1 && newPage <= this.totalPages()) {
+          this.currentPage = newPage;
+          // Optionally scroll to top on page change:
+          // window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      },
     };
   }
 </script>
