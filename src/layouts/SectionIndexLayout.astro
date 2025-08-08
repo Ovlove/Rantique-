@@ -1,6 +1,5 @@
 ---
 import SectionItem from '../components/SectionItem.astro';
-import type { CollectionEntry } from 'astro:content';
 
 const {
   title = 'Untitled Section',
@@ -9,13 +8,13 @@ const {
   pageSize = 10
 } = Astro.props;
 
-// Safer JSON serialization to prevent breaking x-init
+// Pass minimal JSON to Alpine (no HTML markup)
 const serializedPosts = JSON.stringify(
-  posts.map((post) => ({
-    title: post?.data?.title ?? '(No title)',
-    description: post?.data?.description ?? '',
+  posts.map(post => ({
+    title: post?.title ?? '(No title)',
+    description: post?.description ?? '',
     slug: post?.slug ?? '',
-    tags: Array.isArray(post?.data?.tags) ? post.data.tags : [],
+    tags: Array.isArray(post?.tags) ? post.tags : [],
   }))
 ).replace(/</g, '\\u003c');
 ---
@@ -28,7 +27,6 @@ const serializedPosts = JSON.stringify(
     <div
       x-data="sectionList()"
       x-init={`initPosts('${serializedPosts}')`}
-      class="section__controls"
     >
       <!-- Search -->
       <input
@@ -49,15 +47,20 @@ const serializedPosts = JSON.stringify(
         </template>
       </div>
 
-      <!-- Posts -->
+      <!-- Posts list -->
       <div class="posts-list">
         <template x-for="(post, index) in filteredPosts()" :key="post.slug || index">
           <div x-show="showPage(index)">
+            <!-- Render with Alpine props -->
             <SectionItem
-              title={post.title || '(No title)'}
-              description={post.description || ''}
-              slug={post.slug || '#'}
-              tags={post.tags || []}
+              title=""
+              description=""
+              slug=""
+              tags=""
+              x-bind:title="post.title"
+              x-bind:description="post.description"
+              x-bind:slug="post.slug"
+              x-bind:tags="post.tags"
             />
           </div>
         </template>
@@ -101,8 +104,8 @@ const serializedPosts = JSON.stringify(
       filteredPosts() {
         const q = this.query.toLowerCase();
         return this.posts.filter(p => {
-          const title = typeof p.title === 'string' ? p.title.toLowerCase() : '';
-          const description = typeof p.description === 'string' ? p.description.toLowerCase() : '';
+          const title = p.title?.toLowerCase() || '';
+          const description = p.description?.toLowerCase() || '';
           const tags = Array.isArray(p.tags) ? p.tags : [];
 
           const textMatch = title.includes(q) || description.includes(q);
