@@ -1,5 +1,5 @@
 ---
-import SectionItem from '../components/SectionItem.astro'; // Updated path for components folder
+import SectionItem from '../layouts/SectionItem.astro'; // ✅ Correct path for your project
 import type { CollectionEntry } from 'astro:content';
 
 const {
@@ -9,7 +9,7 @@ const {
   pageSize = 10
 } = Astro.props;
 
-// Safer JSON serialization to prevent breaking x-init
+// ✅ Safer JSON serialization to prevent breaking x-init
 const serializedPosts = JSON.stringify(
   posts.map((post) => ({
     title: post?.data?.title ?? '(No title)',
@@ -79,7 +79,7 @@ const serializedPosts = JSON.stringify(
       query: '',
       selectedTag: '',
       currentPage: 1,
-      pageSize: {{ pageSize }},
+      pageSize, // ✅ Fixed — no {{ }} — uses variable directly
       posts: [],
       initPosts(json) {
         try {
