@@ -10,6 +10,12 @@ export let tags: string[] = [];
 export let Content: AstroComponentFactory;
 export let contentType: 'blog' | 'fiction' = 'blog';
 export let subtitle: string | undefined;
+
+const formattedDate = pubDate.toLocaleDateString(undefined, {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
 ---
 
 <BaseLayout {title} {description}>
@@ -18,25 +24,31 @@ export let subtitle: string | undefined;
       contentType === 'fiction' ? 'font-serif' : ''
     }`}
   >
-    <header class="mb-6 text-center">
-      <h1 class="text-4xl font-bold">{title}</h1>
+    <header class="mb-8 text-center">
+      <h1 class="text-4xl font-extrabold leading-tight">{title}</h1>
 
       {subtitle && contentType === 'fiction' && (
-        <p class="text-lg italic text-gray-600 mt-2">{subtitle}</p>
+        <p class="text-lg italic text-gray-600 dark:text-gray-400 mt-2">{subtitle}</p>
       )}
 
       {contentType === 'blog' && (
-        <p class="text-gray-500 text-sm">{pubDate.toDateString()}</p>
+        <time class="text-gray-500 dark:text-gray-400 text-sm" dateTime={pubDate.toISOString()}>
+          {formattedDate}
+        </time>
       )}
 
       {tags.length > 0 && (
-        <div class="mt-2 space-x-2">
+        <nav aria-label="Post tags" class="mt-4 space-x-2">
           {tags.map(tag => (
-            <a href={`/tags/${slugify(tag)}/`} class="inline-block bg-gray-200 text-gray-700 px-2 py-1 text-xs rounded hover:bg-gray-300">
+            <a
+              href={`/tags/${slugify(tag)}/`}
+              class="inline-block bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 px-3 py-1 rounded text-xs font-medium hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+              rel="noopener noreferrer"
+            >
               #{tag}
             </a>
           ))}
-        </div>
+        </nav>
       )}
     </header>
 
