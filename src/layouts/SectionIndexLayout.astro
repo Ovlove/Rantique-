@@ -19,39 +19,54 @@ const serializedPosts = JSON.stringify(
 ).replace(/</g, '\\u003c');
 ---
 
-<section class="section">
-  <div class="container">
-    <h1 class="section__title">{title}</h1>
-    {description && <p class="section__description">{description}</p>}
+<section class="section py-12">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <header class="mb-8 text-center">
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">{title}</h1>
+      {description && (
+        <p class="mt-2 text-gray-600 dark:text-gray-300">{description}</p>
+      )}
+    </header>
 
     <div
       x-data="sectionList()"
       x-init={`initPosts('${serializedPosts}')`}
+      role="region"
+      aria-label="Posts listing"
+      class="space-y-6"
     >
       <!-- Search -->
       <input
         x-model="query"
-        type="text"
+        type="search"
         placeholder="Search posts..."
-        class="search-box"
+        aria-label="Search posts"
+        class="w-full px-4 py-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-[#1A1A2E] text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#7F5AF0] focus:ring-offset-1 transition"
       />
 
       <!-- Tag filter -->
-      <div class="tags">
+      <nav
+        class="flex flex-wrap gap-2"
+        aria-label="Filter posts by tag"
+      >
         <template x-for="tag in uniqueTags" :key="tag">
           <button
-            :class="{'active': selectedTag === tag}"
+            type="button"
+            :class="{
+              'bg-[#7F5AF0] text-white': selectedTag === tag,
+              'bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600': selectedTag !== tag
+            }"
             @click="toggleTag(tag)"
             x-text="tag"
+            class="px-3 py-1 rounded-md text-sm font-medium transition focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-[#7F5AF0]"
           ></button>
         </template>
-      </div>
+      </nav>
 
       <!-- Posts list -->
-      <div class="posts-list">
+      <section class="space-y-8" aria-live="polite" aria-relevant="additions removals">
         <template x-for="(post, index) in filteredPosts()" :key="post.slug || index">
-          <div x-show="showPage(index)">
-            <!-- Render with Alpine props -->
+          <article x-show="showPage(index)" x-transition class="rounded-md border border-gray-300 dark:border-gray-700 p-4 bg-white dark:bg-[#111122] shadow-sm">
             <SectionItem
               title=""
               description=""
@@ -62,20 +77,40 @@ const serializedPosts = JSON.stringify(
               x-bind:slug="post.slug"
               x-bind:tags="post.tags"
             />
-          </div>
+          </article>
         </template>
-      </div>
+        <template x-if="filteredPosts().length === 0">
+          <p class="text-center text-gray-500 dark:text-gray-400">No posts found.</p>
+        </template>
+      </section>
 
       <!-- Pagination -->
-      <div class="pagination" x-show="totalPages() > 1">
-        <button @click="currentPage = Math.max(currentPage - 1, 1)" :disabled="currentPage === 1">
+      <nav
+        class="flex justify-center items-center gap-4 mt-6"
+        aria-label="Pagination"
+        x-show="totalPages() > 1"
+      >
+        <button
+          @click="currentPage = Math.max(currentPage - 1, 1)"
+          :disabled="currentPage === 1"
+          class="px-4 py-2 rounded-md bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#7F5AF0] hover:text-white transition focus:outline-none focus:ring-2 focus:ring-[#7F5AF0]"
+        >
           Prev
         </button>
-        <span x-text="currentPage"></span>
-        <button @click="currentPage = Math.min(currentPage + 1, totalPages())" :disabled="currentPage === totalPages()">
+
+        <span
+          class="text-gray-900 dark:text-gray-100 font-semibold"
+          x-text="`Page ${currentPage} of ${totalPages()}`"
+        ></span>
+
+        <button
+          @click="currentPage = Math.min(currentPage + 1, totalPages())"
+          :disabled="currentPage === totalPages()"
+          class="px-4 py-2 rounded-md bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#7F5AF0] hover:text-white transition focus:outline-none focus:ring-2 focus:ring-[#7F5AF0]"
+        >
           Next
         </button>
-      </div>
+      </nav>
     </div>
   </div>
 </section>
@@ -100,6 +135,7 @@ const serializedPosts = JSON.stringify(
       },
       toggleTag(tag) {
         this.selectedTag = this.selectedTag === tag ? '' : tag;
+        this.currentPage = 1; // Reset to first page when changing tag
       },
       filteredPosts() {
         const q = this.query.toLowerCase();
@@ -124,31 +160,3 @@ const serializedPosts = JSON.stringify(
     };
   }
 </script>
-
-<style>
-  .search-box {
-    width: 100%;
-    padding: 0.5rem;
-    margin-bottom: 1rem;
-  }
-
-  .tags button {
-    margin: 0.25rem;
-    padding: 0.3rem 0.6rem;
-    border: none;
-    background: #eee;
-    cursor: pointer;
-  }
-
-  .tags .active {
-    background: #333;
-    color: #fff;
-  }
-
-  .pagination {
-    display: flex;
-    gap: 0.5rem;
-    margin-top: 1rem;
-    align-items: center;
-  }
-</style>
