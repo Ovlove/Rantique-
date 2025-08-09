@@ -55,12 +55,52 @@ const fictionPosts = rawFictionPosts
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
   }
+
+  /* Fade-in and zoom animation */
+  @keyframes fadeZoomIn {
+    0% {
+      opacity: 0;
+      transform: scale(1.05);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .hero-image {
+    animation: fadeZoomIn 2s ease forwards;
+    width: 100%;
+    max-width: 1920px;
+    height: auto;
+    display: block;
+    border-radius: 0.5rem;
+    margin-bottom: 3rem;
+  }
+
+  @media (max-width: 768px) {
+    .hero-image {
+      max-width: 100%;
+      margin-bottom: 2rem;
+    }
+  }
 </style>
 
 <Layout title="Rantique – A Boutique of Insightful Ideas" description="Articles, opinions, and short fiction that spark thought.">
   <main class="max-w-6xl mx-auto px-6 py-16 space-y-20">
 
-    <!-- Hero Section -->
+    <!-- Hero Image Section with animation -->
+    <section>
+      <img
+        src="/hero-image.jpg"
+        alt="Rantique Hero Image"
+        class="hero-image"
+        loading="lazy"
+        decoding="async"
+      />
+    </section>
+
+    <!-- Existing Hero Section -->
     <section class="text-center">
       <img src="/favicon-32x32.png" alt="Rantique Logo" class="mx-auto w-14 h-14 mb-6" loading="lazy" />
       <h1 class="text-5xl font-extrabold tracking-tight text-gray-900 dark:text-white">
