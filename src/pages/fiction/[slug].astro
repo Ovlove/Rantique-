@@ -12,12 +12,13 @@ if (!post) throw new AstroError(`Fiction post not found: ${slug}`);
 
 // Render content component
 const { Content } = await post.render();
+if (!Content) throw new AstroError(`Content component is undefined for slug: ${slug}`);
 
 // Use metadata from post.data
 const data = post.data;
 
-// Handle publication date
-const pubDate = data?.date instanceof Date ? data.date : null;
+// Fix pubDate parsing
+const pubDate = data?.pubDate ? new Date(data.pubDate) : null;
 
 // Reading time calculation based on word count in frontmatter or fallback to raw body
 const wordsPerMinute = 200;
