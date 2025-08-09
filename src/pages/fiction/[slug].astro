@@ -10,7 +10,11 @@ const { slug } = Astro.params;
 const post = await getEntryBySlug('fiction', slug);
 if (!post) throw new AstroError(`Fiction post not found: ${slug}`);
 
-const { Content, data } = await post.render();
+// Render content component
+const { Content } = await post.render();
+
+// Use metadata from post.data
+const data = post.data;
 
 // Handle publication date
 const pubDate = data?.date instanceof Date ? data.date : null;
@@ -41,6 +45,8 @@ export async function getStaticPaths() {
   tags={data?.tags || []}
   subtitle={data?.subtitle}
   contentType="fiction"
+  readingTime={readingTime}
+  formattedDate={formattedDate}
 >
   <Content components={{ Alert }} />
 </PostLayout>
