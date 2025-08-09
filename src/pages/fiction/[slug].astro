@@ -1,29 +1,33 @@
 ---
-import { getEntryBySlug } from 'astro:content';
+import { getEntryBySlug, getCollection } from 'astro:content';
+import { AstroError } from 'astro/errors';
 import PostLayout from '../../layouts/PostLayout.astro';
 import Alert from '../../components/Alert.astro';
 
 const { slug } = Astro.params;
 
+// Fetch the fiction post by slug
 const post = await getEntryBySlug('fiction', slug);
-if (!post) throw new Error(`Fiction post not found: ${slug}`);
+if (!post) throw new AstroError(`Fiction post not found: ${slug}`);
 
-const { Content } = await post.render();
-if (!Content) throw new Error(`Content component is undefined for slug: ${slug}`);
+const { Content, data } = await post.render();
 
-const data = post.data;
+// Handle publication date
 const pubDate = data?.pubDate ? new Date(data.pubDate) : null;
 
+// Reading time calculation based on word count in frontmatter or fallback to raw body
 const wordsPerMinute = 200;
-const wordCount = post.body?.raw?.trim().split(/\s+/).length || 0;
+const wordCount = data?.readingTimeWords ?? (post.body?.raw?.trim().split(/\s+/).length || 0);
 const readingTime = Math.max(1, Math.ceil(wordCount / wordsPerMinute));
 
+// Format date safely
 const formattedDate = pubDate
   ? pubDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
   : 'Unknown Date';
 
+// Static paths for pre-rendering all fiction posts
 export async function getStaticPaths() {
-  const posts = await import('astro:content').then(mod => mod.getCollection('fiction'));
+  const posts = await getCollection('fiction');
   return posts.map(post => ({
     params: { slug: post.slug },
   }));
@@ -34,7 +38,7 @@ export async function getStaticPaths() {
   title={data?.title ?? 'Untitled'}
   description={data?.description ?? ''}
   pubDate={pubDate}
-  tags={data?.tags ?? []}
+  tags={data?.tags || []}
   subtitle={data?.subtitle}
   contentType="fiction"
   readingTime={readingTime}
